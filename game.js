@@ -1,3 +1,55 @@
+// ─── API Integration ──────────────────────────────────────────────────────────
+// After deploying the Cloudflare Worker, replace this URL:
+const API_BASE = 'https://poker-chain-api.YOURSUBDOMAIN.workers.dev';
+const API_READY = API_BASE && !API_BASE.includes('YOURSUBDOMAIN');
+
+function getTgUser() {
+  return window.Telegram?.WebApp?.initDataUnsafe?.user || null;
+}
+function getTgInitData() {
+  return window.Telegram?.WebApp?.initData || '';
+}
+
+async function apiPost(path, body) {
+  if (!API_READY) return null;
+  try {
+    const res = await fetch(API_BASE + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Tg-Init-Data': getTgInitData() },
+      body: JSON.stringify(body),
+    });
+    return res.ok ? res.json() : null;
+  } catch { return null; }
+}
+
+async function apiGet(path) {
+  if (!API_READY) return null;
+  try {
+    const res = await fetch(API_BASE + path);
+    return res.ok ? res.json() : null;
+  } catch { return null; }
+}
+
+async function submitScore(levelId, score, stars) {
+  return apiPost('/api/score', { level_id: levelId, score, stars });
+}
+
+async function fetchChampions(from, to) {
+  const data = await apiGet(`/api/champions?from=${from}&to=${to}`);
+  return data?.champions || {};
+}
+
+async function fetchLevelTop(levelId) {
+  const data = await apiGet(`/api/level/${levelId}`);
+  return data?.top || [];
+}
+
+async function fetchGlobal() {
+  const user = getTgUser();
+  const q    = user?.id ? `?user_id=${user.id}` : '';
+  return apiGet(`/api/global${q}`);
+}
+
 // ─── Chapter & Level Config ───────────────────────────────────────────────────
 // 15 chapters × 10 levels = 150 total
 // rank: 1-13 = card rank, 14 = Small Joker chapter, 15 = Big Joker chapter
@@ -284,11 +336,13 @@ function renderLevelGrid() {
     const isCurrent  = id === unlocked;
     const el = document.createElement('div');
     el.className = 'level-card ' + (isUnlocked ? 'unlocked' : 'locked') + (isCurrent ? ' current' : '');
+    el.dataset.level = id;
     if (isUnlocked) {
       const localNum = id - ch.from + 1;
       el.innerHTML = `
         <div class="lc-num">${localNum}</div>
         <div class="lc-stars">${starStr(stars)}</div>
+        <div class="lc-champion" style="display:none"></div>
       `;
       el.addEventListener('click', () => startLevel(id));
     } else {
@@ -303,6 +357,25 @@ function renderLevelGrid() {
   // Scroll active chapter's first unlocked level into view
   const firstCurrent = grid.querySelector('.current');
   if (firstCurrent) setTimeout(() => firstCurrent.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 100);
+
+  // Load champion avatars async
+  if (API_READY) {
+    fetchChampions(ch.from, ch.to).then(champions => {
+      Object.entries(champions).forEach(([lvlId, champ]) => {
+        const cell = grid.querySelector(`[data-level="${lvlId}"]`);
+        if (!cell) return;
+        const avatarEl = cell.querySelector('.lc-champion');
+        if (!avatarEl) return;
+        if (champ.avatar_url) {
+          avatarEl.innerHTML = `<img src="${champ.avatar_url}" loading="lazy" onerror="this.parentNode.style.display='none'">`;
+        } else {
+          avatarEl.textContent = (champ.first_name || '?')[0].toUpperCase();
+        }
+        avatarEl.title = `${champ.first_name}: ${Number(champ.score).toLocaleString()}`;
+        avatarEl.style.display = '';
+      });
+    });
+  }
 }
 
 function starStr(n) {
@@ -426,9 +499,21 @@ function settleGame() {
   if (earned > 0) {
     recordWin(currentLevel.id, earned);
     showWin(score, earned);
+    // Submit score async; show rank when response arrives
+    submitScore(currentLevel.id, score, earned).then(result => {
+      if (result?.ok) showWinRank(result.rank, result.total);
+    });
   } else {
     showLose(score, currentLevel.target);
   }
+}
+
+function showWinRank(rank, total) {
+  const el = document.getElementById('win-rank');
+  if (!el) return;
+  const medal = rank === 1 ? '🥇 ' : rank === 2 ? '🥈 ' : rank === 3 ? '🥉 ' : '';
+  el.textContent = `${medal}Global #${rank.toLocaleString()} of ${total.toLocaleString()} players`;
+  el.classList.remove('hidden');
 }
 
 // ─── HUD ──────────────────────────────────────────────────────────────────────
@@ -869,6 +954,9 @@ function showToast(msg) {
 
 function showWin(finalScore, earned) {
   playSound('win');
+  // Reset rank badge (filled async when API responds)
+  const rankEl = document.getElementById('win-rank');
+  if (rankEl) rankEl.classList.add('hidden');
   document.getElementById('overlay-emoji').textContent = earned === 3 ? '🎉' : '✨';
   document.getElementById('overlay-title').textContent = 'Level Clear!';
   document.getElementById('overlay-sub').textContent   = `Score: ${finalScore.toLocaleString()}`;
@@ -881,10 +969,12 @@ function showWin(finalScore, earned) {
     starsRow.appendChild(s);
   }
   const hasNext = currentLevel.id < LEVELS.length;
+  const rankBtn = API_READY ? `<button class="ov-btn secondary" onclick="openLevelLeaderboard(${currentLevel.id})">🏆 Rankings</button>` : '';
   document.getElementById('overlay-btns').innerHTML = `
     ${hasNext ? `<button class="ov-btn primary" onclick="startLevel(${currentLevel.id + 1})">Next Level</button>` : ''}
     <button class="ov-btn secondary" onclick="startLevel(${currentLevel.id})">Retry</button>
     <button class="ov-btn secondary" onclick="showLevelSelect()">Levels</button>
+    ${rankBtn}
   `;
   document.getElementById('overlay').classList.remove('hidden');
   starsRow.querySelectorAll('.star:not(.empty-star)').forEach((s, i) => {
@@ -1237,6 +1327,128 @@ function showMasteryUnlock(ch) {
   `;
   document.body.appendChild(modal);
 }
+
+// ─── Leaderboard Modal ────────────────────────────────────────────────────────
+let _lbCurrentTab  = 'level';
+let _lbCurrentLevel = null;
+
+function avatarHTML(row) {
+  if (row.avatar_url) {
+    return `<img src="${row.avatar_url}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display=''">
+            <span style="display:none">${(row.first_name||'?')[0].toUpperCase()}</span>`;
+  }
+  return `<span>${(row.first_name||'?')[0].toUpperCase()}</span>`;
+}
+
+function rankClass(i) {
+  return i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+}
+
+function rankLabel(i) {
+  return i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+}
+
+function renderLbRows(rows, myId) {
+  const list = document.getElementById('lb-list');
+  if (!rows.length) {
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-dim);font-size:14px">No scores yet — be the first!</div>';
+    return;
+  }
+  list.innerHTML = rows.map((row, i) => {
+    const isMe = row.user_id == myId;
+    const score = row.score ?? row.total_score ?? 0;
+    const meta  = row.levels_played != null ? `${row.levels_played} levels · ${row.perfect_levels} ★★★` : ``;
+    return `<div class="lb-row">
+      <div class="lb-rank ${rankClass(i)}">${rankLabel(i)}</div>
+      <div class="lb-avatar">${avatarHTML(row)}</div>
+      <div class="lb-info">
+        <div class="lb-name${isMe ? ' is-me' : ''}">${row.first_name || row.username || 'Player'}${isMe ? ' (you)' : ''}</div>
+        ${meta ? `<div class="lb-meta">${meta}</div>` : ''}
+      </div>
+      <div class="lb-score">${Number(score).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMyRank(rank, score, total) {
+  const el = document.getElementById('lb-my-rank');
+  if (!rank) { el.classList.add('hidden'); return; }
+  const me = getTgUser();
+  el.innerHTML = `
+    <div class="lb-rank">#${rank.toLocaleString()}</div>
+    <div class="lb-avatar">${me?.photo_url ? `<img src="${me.photo_url}" loading="lazy">` : `<span>${(me?.first_name||'?')[0].toUpperCase()}</span>`}</div>
+    <div class="lb-info"><div class="lb-name is-me">${me?.first_name || 'You'} (you)</div></div>
+    <div class="lb-score">${Number(score).toLocaleString()}</div>
+  `;
+  el.classList.remove('hidden');
+}
+
+async function openLevelLeaderboard(levelId) {
+  _lbCurrentLevel = levelId;
+  _lbCurrentTab   = 'level';
+  showLeaderboardModal();
+  await loadLbTab('level');
+}
+
+async function openGlobalLeaderboard() {
+  _lbCurrentTab = 'global';
+  showLeaderboardModal();
+  await loadLbTab('global');
+}
+
+function showLeaderboardModal() {
+  document.getElementById('lb-modal').classList.remove('hidden');
+  document.getElementById('lb-tab-level').classList.toggle('active', _lbCurrentTab === 'level');
+  document.getElementById('lb-tab-global').classList.toggle('active', _lbCurrentTab === 'global');
+  document.getElementById('lb-list').innerHTML = '';
+  document.getElementById('lb-loading').style.display = '';
+  document.getElementById('lb-my-rank').classList.add('hidden');
+}
+
+async function loadLbTab(tab) {
+  _lbCurrentTab = tab;
+  document.getElementById('lb-tab-level').classList.toggle('active', tab === 'level');
+  document.getElementById('lb-tab-global').classList.toggle('active', tab === 'global');
+  document.getElementById('lb-list').innerHTML = '';
+  document.getElementById('lb-loading').style.display = '';
+  document.getElementById('lb-my-rank').classList.add('hidden');
+
+  const me = getTgUser();
+  const myId = me?.id || null;
+
+  if (tab === 'level') {
+    const levelId = _lbCurrentLevel || currentLevel?.id || 1;
+    const top = await fetchLevelTop(levelId);
+    document.getElementById('lb-loading').style.display = 'none';
+    renderLbRows(top, myId);
+    // Show my rank if I'm in the list
+    const myRow = top.findIndex(r => r.user_id == myId);
+    if (myRow >= 0) {
+      renderMyRank(myRow + 1, top[myRow].score, top.length);
+    }
+  } else {
+    const data = await fetchGlobal();
+    document.getElementById('lb-loading').style.display = 'none';
+    if (!data) return;
+    renderLbRows(data.top || [], myId);
+    if (data.my_rank) renderMyRank(data.my_rank, data.my_score, null);
+  }
+}
+
+function switchLbTab(tab) {
+  loadLbTab(tab);
+}
+
+function closeLeaderboard() {
+  document.getElementById('lb-modal').classList.add('hidden');
+}
+
+// Close leaderboard on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('lb-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('lb-modal')) closeLeaderboard();
+  });
+});
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {

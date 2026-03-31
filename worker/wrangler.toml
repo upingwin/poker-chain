@@ -1,0 +1,21 @@
+# Poker Chain API · Cloudflare Worker
+#
+# SETUP STEPS:
+#   1. npm install -g wrangler
+#   2. wrangler login
+#   3. wrangler d1 create poker-chain
+#      → copy the database_id from the output and paste below
+#   4. wrangler d1 execute poker-chain --file=schema.sql
+#   5. wrangler secret put BOT_TOKEN
+#      → paste your Telegram bot token when prompted
+#   6. wrangler deploy
+#      → note the *.workers.dev URL and put it in game.js API_BASE
+
+name              = "poker-chain-api"
+main              = "worker.js"
+compatibility_date = "2024-11-01"
+
+[[d1_databases]]
+binding       = "DB"
+database_name = "poker-chain"
+database_id   = "REPLACE_WITH_YOUR_DATABASE_ID"

@@ -18,9 +18,12 @@
 
     <div id="select-top">
       <div id="select-title">Poker Chain</div>
-      <div id="select-stars-badge" class="hidden">
-        <span id="stars-owned">0</span>
-        <span class="star-icon">⭐</span>
+      <div id="select-top-right">
+        <div id="select-stars-badge" class="hidden">
+          <span id="stars-owned">0</span>
+          <span class="star-icon">⭐</span>
+        </div>
+        <button id="btn-trophy" onclick="openGlobalLeaderboard()" aria-label="Leaderboard">🏆</button>
       </div>
     </div>
 
@@ -122,8 +125,25 @@
       <div id="overlay-emoji"></div>
       <div id="overlay-title"></div>
       <div id="overlay-sub"></div>
+      <div id="win-rank" class="hidden"></div>
       <div id="stars-row"></div>
       <div id="overlay-btns"></div>
+    </div>
+  </div>
+
+  <!-- ══ LEADERBOARD MODAL ══ -->
+  <div id="lb-modal" class="hidden">
+    <div id="lb-box">
+      <div id="lb-header">
+        <div id="lb-tabs">
+          <button id="lb-tab-level"  class="lb-tab active" onclick="switchLbTab('level')">This Level</button>
+          <button id="lb-tab-global" class="lb-tab"        onclick="switchLbTab('global')">Global</button>
+        </div>
+        <button id="lb-close" onclick="closeLeaderboard()">✕</button>
+      </div>
+      <div id="lb-loading">Loading…</div>
+      <div id="lb-list"></div>
+      <div id="lb-my-rank" class="hidden"></div>
     </div>
   </div>
 
