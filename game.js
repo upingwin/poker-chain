@@ -1397,34 +1397,29 @@ function showScoringTutorial() {
   modal.innerHTML = `
     <div id="tut-box">
       <div id="tut-title">How to Score</div>
-      <p id="tut-sub">Longer chains = higher base · connection type adds a multiplier</p>
-      <div id="tut-rows">
-        <div class="tut-row" style="--d:0s">
-          <div class="tut-score-lengths">
-            <div class="tut-len-item"><span class="tut-len-n">3</span><span class="tut-len-pts">100</span></div>
-            <div class="tut-len-sep">→</div>
-            <div class="tut-len-item"><span class="tut-len-n">5</span><span class="tut-len-pts">500</span></div>
-            <div class="tut-len-sep">→</div>
-            <div class="tut-len-item"><span class="tut-len-n">7</span><span class="tut-len-pts hi">1000</span></div>
-          </div>
-          <div class="tut-label">Base Points (cards)</div>
-        </div>
-        <div class="tut-row" style="--d:0.45s">
-          <div class="tut-mult-grid">
-            <div class="tut-mult-item"><span class="tut-mult-x">×1.2</span><span class="tut-mult-name">Flush</span></div>
-            <div class="tut-mult-item"><span class="tut-mult-x">×1.3</span><span class="tut-mult-name">Straight</span></div>
-            <div class="tut-mult-item"><span class="tut-mult-x">×1.4</span><span class="tut-mult-name">Set</span></div>
-            <div class="tut-mult-item tut-mult-special"><span class="tut-mult-x">×2.0</span><span class="tut-mult-name">Royal Flush</span></div>
-          </div>
-          <div class="tut-label">Multipliers</div>
-        </div>
-        <div class="tut-row" style="--d:0.9s">
-          <div class="tut-tips">
-            <div class="tut-tip-line">🃏 Joker in chain adds ×1.1</div>
-            <div class="tut-tip-line">⏱ Each card eliminated adds +1s</div>
-          </div>
+
+      <div class="tut-sec">
+        <div class="tut-sec-hd">Chain length → base points</div>
+        <div class="tut-pts-bar">
+          <div class="tut-pts-cell"><span class="tpc-n">3</span><span class="tpc-p">100</span></div>
+          <div class="tut-pts-cell"><span class="tpc-n">5</span><span class="tpc-p">500</span></div>
+          <div class="tut-pts-cell"><span class="tpc-n">7</span><span class="tpc-p">1000</span></div>
+          <div class="tut-pts-cell hi"><span class="tpc-n">10+</span><span class="tpc-p">1600+</span></div>
         </div>
       </div>
+
+      <div class="tut-sec">
+        <div class="tut-sec-hd">Bonus multipliers</div>
+        <div class="tut-bonus-list">
+          <div class="tut-brow"><span class="tut-beg">♠♣♥</span><span class="tut-bname">Same suit</span><span class="tut-bx">×1.2</span></div>
+          <div class="tut-brow"><span class="tut-beg">3·4·5</span><span class="tut-bname">Run (consecutive)</span><span class="tut-bx">×1.3</span></div>
+          <div class="tut-brow"><span class="tut-beg">7·7·7</span><span class="tut-bname">3 of a kind</span><span class="tut-bx">×1.4</span></div>
+          <div class="tut-brow top"><span class="tut-beg red">♥A KQ</span><span class="tut-bname">Royal Flush</span><span class="tut-bx gold">×2.0</span></div>
+        </div>
+      </div>
+
+      <div class="tut-footer-tip">⏱ Each card cleared adds +1s to the clock</div>
+
       <button id="tut-btn" onclick="closeScoringTutorial()">Got it!</button>
     </div>
   `;
