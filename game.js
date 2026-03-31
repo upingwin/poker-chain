@@ -1,6 +1,6 @@
 // ─── API Integration ──────────────────────────────────────────────────────────
 // After deploying the Cloudflare Worker, replace this URL:
-const API_BASE = 'https://poker-chain-api.YOURSUBDOMAIN.workers.dev';
+const API_BASE = 'https://poker-chain-api.pokerchain.workers.dev';
 const API_READY = API_BASE && !API_BASE.includes('YOURSUBDOMAIN');
 
 function getTgUser() {
