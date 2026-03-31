@@ -636,9 +636,9 @@ function renderBoard(flipSet = new Set()) {
         if (mastered.has(cardRankKey(card))) el.classList.add('power-card');
         const rl = RANK_LABEL[card.rank], ss = SUIT_SYMBOL[card.suit];
         el.innerHTML = `
-          <div class="card-tl">${rl}<span>${ss}</span></div>
+          <div class="card-tl">${rl}</div>
           <div class="card-center">${ss}</div>
-          <div class="card-br">${rl}<span>${ss}</span></div>
+          <div class="card-br">${rl}</div>
         `;
         if (flipSet.has(key)) el.classList.add('flip-in');
       }
