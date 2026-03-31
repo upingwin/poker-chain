@@ -69,7 +69,7 @@ body {
 .hidden { display: none !important; }
 
 /* ══════════════════════════════
-   LEVEL SELECT
+   HOME / CHAPTER SELECT
 ══════════════════════════════ */
 #screen-select {
   width: 100%;
@@ -79,19 +79,28 @@ body {
   gap: 0;
 }
 
-/* Top bar */
-#select-top {
+/* ── Select header ── */
+#select-header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  padding: 4px 0 12px;
+  padding: 2px 0 14px;
+  gap: 8px;
 }
 #select-title {
   font-family: 'EB Garamond', Georgia, serif;
-  font-size: clamp(26px, 7vw, 36px);
+  font-size: clamp(20px, 5.5vw, 28px);
   font-weight: 700;
   color: var(--ink);
   line-height: 1;
+  flex: 1;
+  text-align: center;
+}
+#select-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 #select-stars-badge {
   display: flex;
@@ -107,49 +116,178 @@ body {
 }
 .star-icon { font-size: 13px; }
 
-/* Chapter tabs */
-#chapter-tabs {
+/* ── Player profile ── */
+#player-profile {
   display: flex;
+  align-items: center;
   gap: 6px;
-  overflow-x: auto;
-  padding: 0 0 12px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-#chapter-tabs::-webkit-scrollbar { display: none; }
-
-.ch-tab {
   flex-shrink: 0;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1px solid var(--border-md);
-  background: var(--card);
-  color: var(--ink-mid);
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  white-space: nowrap;
-  display: flex; align-items: center; gap: 3px;
+  min-width: 0;
+  max-width: 110px;
+}
+#player-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--border-md);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--ink-mid);
+  flex-shrink: 0;
+}
+#player-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#player-name {
+  font-size: 12px; font-weight: 600; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── Chapter card grid ── */
+#chapter-grid-view { width: 100%; }
+#chapter-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-bottom: 24px;
+}
+
+.ch-card {
+  aspect-ratio: 5/7;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.16s var(--spring), box-shadow 0.16s;
+  animation: chCardIn 0.4s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 0.035s);
   -webkit-tap-highlight-color: transparent;
-  font-family: 'EB Garamond', Georgia, serif;
 }
-.ch-symbol { line-height: 1; }
-.ch-crown  { font-size: 9px; color: #c8a84b; line-height: 1; font-family: system-ui; }
-.ch-tab.active {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
+@keyframes chCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.93); }
+  to   { opacity: 1; transform: none; }
 }
-.ch-tab.active .ch-crown { color: #f5d87a; }
-.ch-tab.mastered {
-  border-color: oklch(72% 0.12 80);
-  background: oklch(93% 0.04 78);
-  color: oklch(35% 0.06 70);
+
+/* Unlocked card face */
+.ch-card.unlocked {
+  background: var(--card);
+  border: 1px solid var(--border-md);
+  box-shadow: 0 2px 8px oklch(17% 0.014 50 / 0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+  cursor: pointer;
 }
-.ch-tab.locked {
-  opacity: 0.35;
+.ch-card.unlocked:active { transform: scale(0.94); }
+.ch-card.red  { color: var(--red); }
+.ch-card.black { color: var(--ink); }
+
+/* Mastered: gold border */
+.ch-card.mastered {
+  border-color: oklch(72% 0.14 82) !important;
+  box-shadow: 0 0 0 1.5px oklch(72% 0.14 82), 0 2px 12px oklch(72% 0.14 82 / 0.22) !important;
+}
+.ch-card.mastered::after {
+  content: '✦';
+  position: absolute; top: 4px; right: 6px;
+  font-size: 9px; color: oklch(62% 0.14 80);
+  line-height: 1; pointer-events: none;
+}
+
+/* Locked card back */
+.ch-card.locked {
+  background: var(--back);
+  border: 1px solid oklch(17% 0.014 50 / 0.35);
   cursor: default;
+}
+
+/* Card corners (like real playing cards) */
+.chc-corner {
+  position: absolute;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.chc-corner.tl { top: 5px; left: 6px; }
+.chc-corner.br { bottom: 5px; right: 6px; transform: rotate(180deg); }
+.chc-rank   { font-size: clamp(11px, 2.4vw, 15px); }
+.chc-suit-sm { font-size: clamp(9px, 1.8vw, 12px); line-height: 1.2; }
+
+/* Center content */
+.chc-body {
+  position: absolute;
+  top: 44%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px;
+  width: 100%;
+}
+.chc-suit-big {
+  font-size: clamp(28px, 6.5vw, 40px);
+  line-height: 1;
+}
+.chc-chapter-name {
+  font-size: clamp(7px, 1.5vw, 10px);
+  font-weight: 700; letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+
+/* Stars progress at bottom */
+.chc-progress {
+  position: absolute;
+  bottom: 5px; left: 0; right: 0;
+  text-align: center;
+}
+.chc-stars-count {
+  font-size: clamp(8px, 1.5vw, 10px);
+  font-weight: 700;
+  color: var(--ink-dim);
+  opacity: 0.8;
+}
+
+/* Locked card interior */
+.chc-lock-face {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  background-image:
+    repeating-linear-gradient(45deg, oklch(99% 0.004 80 / 0.04) 0, oklch(99% 0.004 80 / 0.04) 1.5px, transparent 1.5px, transparent 10px),
+    repeating-linear-gradient(-45deg, oklch(99% 0.004 80 / 0.04) 0, oklch(99% 0.004 80 / 0.04) 1.5px, transparent 1.5px, transparent 10px);
+}
+.chc-lock-symbol {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 700;
+  color: oklch(99% 0.004 80 / 0.10);
+  line-height: 1;
+}
+.chc-lock-icon { font-size: clamp(14px, 3vw, 18px); opacity: 0.45; }
+
+/* ── Level grid sub-screen ── */
+#level-grid-view { width: 100%; }
+#lgv-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+#btn-back-chapters {
+  display: flex; align-items: center; gap: 4px;
+  background: none;
+  border: 1px solid var(--border-md);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-mid);
+  cursor: pointer; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+#btn-back-chapters:active { background: var(--surface); }
+#lgv-chapter-title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--ink); flex: 1;
 }
 
 /* Level panel */
@@ -824,7 +962,12 @@ body {
 .star           { font-size: 22px; opacity: 0; transform: scale(0.3) rotate(-20deg); transition: opacity 0.3s var(--spring), transform 0.4s var(--spring); }
 .star.lit       { opacity: 1; transform: scale(1) rotate(0deg); }
 .star.empty-star { opacity: 0.18; transform: scale(1); }
-#overlay-btns   { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+#overlay-btns   {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
 
 /* Stars modal */
 #stars-modal {
@@ -876,21 +1019,17 @@ body {
 }
 .ov-btn.secondary:active { background: var(--surface); }
 
-/* ── Select top right cluster ── */
-#select-top-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* ── Trophy button ── */
 #btn-trophy {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   cursor: pointer;
   line-height: 1;
   padding: 4px;
   border-radius: 8px;
   transition: transform 0.15s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
 }
 #btn-trophy:active { transform: scale(0.88); }
 

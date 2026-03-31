@@ -275,41 +275,120 @@ function couldBeConsecutive(ranks) {
 }
 
 // ─── Level Select ─────────────────────────────────────────────────────────────
+// Suit assignment per chapter: A♠ 2♥ 3♦ 4♣ 5♠ 6♥ 7♦ 8♣ 9♠ 10♥ J♦ Q♣ K♠ joker joker
+const CH_SUITS  = ['♠','♥','♦','♣','♠','♥','♦','♣','♠','♥','♦','♣','♠','',''];
+const CH_RED_IDS = new Set([2, 3, 6, 7, 10, 11]); // hearts & diamonds chapters
+
 function showLevelSelect() {
   stopTimer();
   document.getElementById('screen-game').classList.add('hidden');
   document.getElementById('screen-select').classList.remove('hidden');
   hideOverlay();
   closeStarsModal();
-  renderChapterTabs();
-  renderLevelGrid();
 
-  // Telegram BackButton visibility
+  renderPlayerProfile();
+  renderChapterGrid();
+  showChapterGridView();
+  updateStarsBadge();
+
   if (window.Telegram?.WebApp?.BackButton) window.Telegram.WebApp.BackButton.hide();
 }
 
-function renderChapterTabs() {
-  const tabs = document.getElementById('chapter-tabs');
-  if (!tabs) return;
-  const unlocked = getUnlocked();
-  tabs.innerHTML = '';
-  CHAPTERS.forEach(ch => {
-    const isAvail    = ch.from <= unlocked;
-    const mastered   = isAvail && isChapterMastered(ch.id);
-    const btn = document.createElement('button');
-    btn.className = 'ch-tab'
-      + (ch.id === activeChapter ? ' active' : '')
-      + (!isAvail ? ' locked' : '')
-      + (mastered ? ' mastered' : '');
-    btn.disabled = !isAvail;
-    btn.innerHTML = `<span class="ch-symbol">${ch.symbol}</span>${mastered ? '<span class="ch-crown">✦</span>' : ''}`;
-    btn.title = ch.name;
-    btn.addEventListener('click', () => {
-      activeChapter = ch.id;
-      renderChapterTabs();
-      renderLevelGrid();
-    });
-    tabs.appendChild(btn);
+function showChapterGridView() {
+  document.getElementById('chapter-grid-view').classList.remove('hidden');
+  document.getElementById('level-grid-view').classList.add('hidden');
+}
+
+function openChapter(chId) {
+  activeChapter = chId;
+  const ch = CHAPTERS.find(c => c.id === chId);
+  document.getElementById('chapter-grid-view').classList.add('hidden');
+  document.getElementById('level-grid-view').classList.remove('hidden');
+  if (ch) {
+    document.getElementById('lgv-chapter-title').textContent = `${ch.symbol}  ${ch.name}`;
+  }
+  renderLevelGrid();
+}
+
+function renderPlayerProfile() {
+  const user = getTgUser();
+  const el = document.getElementById('player-profile');
+  if (!user || !el) return;
+  el.classList.remove('hidden');
+  const avatarEl = document.getElementById('player-avatar');
+  const nameEl   = document.getElementById('player-name');
+  if (user.photo_url) {
+    avatarEl.innerHTML = `<img src="${user.photo_url}" onerror="this.style.display='none'">`;
+  } else {
+    avatarEl.textContent = (user.first_name || '?')[0].toUpperCase();
+  }
+  nameEl.textContent = user.first_name || user.username || 'Player';
+}
+
+function updateStarsBadge() {
+  const allStars = loadProgress().stars || {};
+  const total = Object.values(allStars).reduce((s, v) => s + v, 0);
+  const badge = document.getElementById('select-stars-badge');
+  const owned = document.getElementById('stars-owned');
+  if (!badge || !owned) return;
+  if (total > 0) {
+    owned.textContent = total;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+function renderChapterGrid() {
+  const grid = document.getElementById('chapter-card-grid');
+  if (!grid) return;
+  const unlocked  = getUnlocked();
+  const allStars  = loadProgress().stars || {};
+
+  grid.innerHTML = '';
+  CHAPTERS.forEach((ch, idx) => {
+    const isAvail  = ch.from <= unlocked;
+    const mastered = isAvail && isChapterMastered(ch.id);
+    const isRed    = CH_RED_IDS.has(ch.id);
+    const suit     = CH_SUITS[ch.id - 1] || '';
+
+    // Stars for this chapter
+    let earned = 0;
+    for (let id = ch.from; id <= ch.to; id++) earned += allStars[id] || 0;
+
+    const card = document.createElement('div');
+    card.className = `ch-card ${isAvail ? (isRed ? 'unlocked red' : 'unlocked black') : 'locked'}${mastered ? ' mastered' : ''}`;
+    card.style.setProperty('--i', idx);
+
+    if (isAvail) {
+      const centerSymbol = suit || ch.symbol;
+      card.innerHTML = `
+        <div class="chc-corner tl">
+          <div class="chc-rank">${ch.symbol}</div>
+          <div class="chc-suit-sm">${suit}</div>
+        </div>
+        <div class="chc-body">
+          <div class="chc-suit-big">${centerSymbol}</div>
+          <div class="chc-chapter-name">${ch.name}</div>
+        </div>
+        <div class="chc-progress">
+          <div class="chc-stars-count">${earned}/30★</div>
+        </div>
+        <div class="chc-corner br">
+          <div class="chc-rank">${ch.symbol}</div>
+          <div class="chc-suit-sm">${suit}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => openChapter(ch.id));
+    } else {
+      card.innerHTML = `
+        <div class="chc-lock-face">
+          <div class="chc-lock-symbol">${ch.symbol}</div>
+          <div class="chc-lock-icon">🔒</div>
+        </div>
+      `;
+    }
+    grid.appendChild(card);
   });
 }
 
@@ -322,12 +401,12 @@ function renderLevelGrid() {
   const mastered  = isChapterMastered(ch.id);
   grid.innerHTML  = '';
 
-  // Chapter header
+  // Power status hint inside level grid
   const header = document.createElement('div');
   header.className = 'chapter-grid-header';
   header.innerHTML = mastered
-    ? `<span class="cgh-symbol">${ch.symbol}</span><span class="cgh-name">${ch.name}</span><span class="cgh-badge">✦ Power Unlocked</span>`
-    : `<span class="cgh-symbol">${ch.symbol}</span><span class="cgh-name">${ch.name}</span><span class="cgh-hint">3★ all 10 to unlock Power</span>`;
+    ? `<span class="cgh-badge">✦ Power Unlocked</span>`
+    : `<span class="cgh-hint">3★ all 10 to unlock Power Card</span>`;
   grid.appendChild(header);
 
   for (let id = ch.from; id <= ch.to; id++) {
@@ -981,12 +1060,13 @@ function showWin(finalScore, earned) {
     starsRow.appendChild(s);
   }
   const hasNext = currentLevel.id < LEVELS.length;
-  const rankBtn = API_READY ? `<button class="ov-btn secondary" onclick="openLevelLeaderboard(${currentLevel.id})">🏆 Rankings</button>` : '';
   document.getElementById('overlay-btns').innerHTML = `
-    ${hasNext ? `<button class="ov-btn primary" onclick="startLevel(${currentLevel.id + 1})">Next Level</button>` : ''}
+    <button class="ov-btn primary" onclick="${hasNext ? `startLevel(${currentLevel.id + 1})` : 'showLevelSelect()'}">
+      ${hasNext ? 'Next Level' : 'Back'}
+    </button>
     <button class="ov-btn secondary" onclick="startLevel(${currentLevel.id})">Retry</button>
-    <button class="ov-btn secondary" onclick="showLevelSelect()">Levels</button>
-    ${rankBtn}
+    <button class="ov-btn secondary" onclick="openLevelLeaderboard(${currentLevel.id})"${!API_READY ? ' style="opacity:.4;pointer-events:none"' : ''}>🏆 Rankings</button>
+    <button class="ov-btn secondary" onclick="showLevelSelect()">Back</button>
   `;
   document.getElementById('overlay').classList.remove('hidden');
   starsRow.querySelectorAll('.star:not(.empty-star)').forEach((s, i) => {

@@ -13,12 +13,17 @@
 </head>
 <body>
 
-  <!-- ══ LEVEL SELECT ══ -->
+  <!-- ══ HOME / CHAPTER SELECT ══ -->
   <div id="screen-select">
 
-    <div id="select-top">
+    <!-- Header: player profile ← → stars + trophy -->
+    <div id="select-header">
+      <div id="player-profile" class="hidden">
+        <div id="player-avatar"></div>
+        <span id="player-name"></span>
+      </div>
       <div id="select-title">Poker Chain</div>
-      <div id="select-top-right">
+      <div id="select-header-right">
         <div id="select-stars-badge" class="hidden">
           <span id="stars-owned">0</span>
           <span class="star-icon">⭐</span>
@@ -27,15 +32,26 @@
       </div>
     </div>
 
-    <!-- Chapter tabs -->
-    <div id="chapter-tabs"></div>
-
-    <!-- Level grid for active chapter -->
-    <div id="level-panel">
-      <div id="level-grid"></div>
+    <!-- Chapter card grid (home view) -->
+    <div id="chapter-grid-view">
+      <div id="chapter-card-grid"></div>
     </div>
 
-    <div id="select-rule">Suit · Rank · Straight · Master cards to power up</div>
+    <!-- Level grid (sub-screen, shown when a chapter is tapped) -->
+    <div id="level-grid-view" class="hidden">
+      <div id="lgv-header">
+        <button id="btn-back-chapters" onclick="showChapterGridView()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Chapters
+        </button>
+        <div id="lgv-chapter-title"></div>
+      </div>
+      <div id="level-panel">
+        <div id="level-grid"></div>
+      </div>
+    </div>
 
   </div>
 
