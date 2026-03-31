@@ -177,6 +177,7 @@ let board = [], deck = [], discardPile = [];
 let score = 0;
 let timeLeft = 0, timerId = null;
 let isDragging = false, selectedCells = [];
+let gameOver = false;
 let currentLevel = null;
 let toolsLeft = { shuffle: 0, undo: 0 };
 let prevState  = null;
@@ -467,6 +468,7 @@ function startLevel(id) {
   score         = 0;
   selectedCells = [];
   isDragging        = false;
+  gameOver          = false;
   discardPile       = [];
   prevState         = null;
   window._targetToastShown = false;
@@ -574,6 +576,8 @@ function updateTimerRing() {
 }
 
 function settleGame() {
+  if (gameOver) return;
+  gameOver = true;
   stopTimer();
   document.getElementById('board-container')?.classList.remove('urgency');
   const earned = STAR_THRESHOLDS.filter(t => score >= currentLevel.target * t).length;
@@ -974,6 +978,7 @@ function extendSelect(cell, px, py) {
 
 function endSelect() {
   if (!isDragging) return;
+  if (gameOver) { isDragging = false; clearSelection(); return; }
   isDragging = false;
   if (selectedCells.length >= 3 && validateConnection(selectedCells)) {
     eliminateCells([...selectedCells]);
@@ -1222,7 +1227,7 @@ function closeStarsModal() {
   modal.classList.add('hidden');
   pendingStarsTool = null;
   // Resume timer if game is still active
-  if (!timerId && timeLeft > 0 && currentLevel) {
+  if (!timerId && timeLeft > 0 && currentLevel && !gameOver) {
     timerId = setInterval(timerTick, 1000);
   }
 }
@@ -1335,6 +1340,7 @@ function jokerHTML(isBig) {
 
 // ─── Tutorial Popup (first-time, Level 1 only) ────────────────────────────────
 function showTutorialPopup() {
+  stopTimer();
   const modal = document.createElement('div');
   modal.id = 'tut-modal';
   modal.innerHTML = `
@@ -1387,11 +1393,15 @@ function closeTutorialPopup() {
   const p = loadProgress();
   p.tutorialSeen = true;
   saveProgress(p);
+  if (!timerId && timeLeft > 0 && currentLevel && !gameOver) {
+    timerId = setInterval(timerTick, 1000);
+  }
 }
 
 // ─── Scoring Tutorial (Level 2, first time) ───────────────────────────────────
 function showScoringTutorial() {
   if (document.getElementById('tut-modal')) return; // don't stack
+  stopTimer();
   const modal = document.createElement('div');
   modal.id = 'tut-modal';
   modal.innerHTML = `
@@ -1434,6 +1444,9 @@ function closeScoringTutorial() {
   const p = loadProgress();
   p.scoringTutSeen = true;
   saveProgress(p);
+  if (!timerId && timeLeft > 0 && currentLevel && !gameOver) {
+    timerId = setInterval(timerTick, 1000);
+  }
 }
 
 // ─── Mastery Unlock Toast ─────────────────────────────────────────────────────
