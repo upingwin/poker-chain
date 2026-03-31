@@ -515,6 +515,8 @@ function startLevel(id) {
 
   // First-time tutorial popup on level 1
   if (id === 1 && !loadProgress().tutorialSeen) showTutorialPopup();
+  // Scoring tutorial on level 2 (first time only)
+  if (id === 2 && !loadProgress().scoringTutSeen) setTimeout(() => showScoringTutorial(), 500);
 }
 
 function goBack() {
@@ -751,23 +753,8 @@ function clearConnectionLine() {
 
 // ─── Hint Highlighting ────────────────────────────────────────────────────────
 function updateHints() {
+  // Hint highlighting disabled — players navigate by intuition
   document.querySelectorAll('.hint-next').forEach(el => el.classList.remove('hint-next'));
-  if (!isDragging || selectedCells.length === 0) return;
-  const last = selectedCells[selectedCells.length - 1];
-  for (let dr = -1; dr <= 1; dr++) {
-    for (let dc = -1; dc <= 1; dc++) {
-      if (!dr && !dc) continue;
-      const nr = last.row + dr, nc = last.col + dc;
-      if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
-      if (!board[nr]?.[nc]?.faceUp) continue;
-      if (selectedCells.some(p => p.row === nr && p.col === nc)) continue;
-      const testCells = [...selectedCells, { row: nr, col: nc }];
-      if ((testCells.length >= 3 && validateConnection(testCells)) ||
-          (testCells.length < 3  && couldBeValid(testCells))) {
-        getCardEl(nr, nc)?.classList.add('hint-next');
-      }
-    }
-  }
 }
 
 function couldBeValid(cells) {
@@ -1399,6 +1386,58 @@ function closeTutorialPopup() {
   setTimeout(() => modal.remove(), 280);
   const p = loadProgress();
   p.tutorialSeen = true;
+  saveProgress(p);
+}
+
+// ─── Scoring Tutorial (Level 2, first time) ───────────────────────────────────
+function showScoringTutorial() {
+  if (document.getElementById('tut-modal')) return; // don't stack
+  const modal = document.createElement('div');
+  modal.id = 'tut-modal';
+  modal.innerHTML = `
+    <div id="tut-box">
+      <div id="tut-title">How to Score</div>
+      <p id="tut-sub">Longer chains = higher base · connection type adds a multiplier</p>
+      <div id="tut-rows">
+        <div class="tut-row" style="--d:0s">
+          <div class="tut-score-lengths">
+            <div class="tut-len-item"><span class="tut-len-n">3</span><span class="tut-len-pts">100</span></div>
+            <div class="tut-len-sep">→</div>
+            <div class="tut-len-item"><span class="tut-len-n">5</span><span class="tut-len-pts">500</span></div>
+            <div class="tut-len-sep">→</div>
+            <div class="tut-len-item"><span class="tut-len-n">7</span><span class="tut-len-pts hi">1000</span></div>
+          </div>
+          <div class="tut-label">Base Points (cards)</div>
+        </div>
+        <div class="tut-row" style="--d:0.45s">
+          <div class="tut-mult-grid">
+            <div class="tut-mult-item"><span class="tut-mult-x">×1.2</span><span class="tut-mult-name">Flush</span></div>
+            <div class="tut-mult-item"><span class="tut-mult-x">×1.3</span><span class="tut-mult-name">Straight</span></div>
+            <div class="tut-mult-item"><span class="tut-mult-x">×1.4</span><span class="tut-mult-name">Set</span></div>
+            <div class="tut-mult-item tut-mult-special"><span class="tut-mult-x">×2.0</span><span class="tut-mult-name">Royal Flush</span></div>
+          </div>
+          <div class="tut-label">Multipliers</div>
+        </div>
+        <div class="tut-row" style="--d:0.9s">
+          <div class="tut-tips">
+            <div class="tut-tip-line">🃏 Joker in chain adds ×1.1</div>
+            <div class="tut-tip-line">⏱ Each card eliminated adds +1s</div>
+          </div>
+        </div>
+      </div>
+      <button id="tut-btn" onclick="closeScoringTutorial()">Got it!</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function closeScoringTutorial() {
+  const modal = document.getElementById('tut-modal');
+  if (!modal) return;
+  modal.classList.add('tut-exit');
+  setTimeout(() => modal.remove(), 280);
+  const p = loadProgress();
+  p.scoringTutSeen = true;
   saveProgress(p);
 }
 
