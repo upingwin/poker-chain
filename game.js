@@ -935,9 +935,19 @@ function cellFromPoint(x, y) { return cellFromEl(document.elementFromPoint(x, y)
 document.addEventListener('mousedown',  e => startSelect(cellFromEl(e.target)));
 document.addEventListener('mousemove',  e => { if (isDragging) extendSelect(cellFromEl(e.target), e.clientX, e.clientY); });
 document.addEventListener('mouseup',    () => endSelect());
-document.addEventListener('touchstart', e => { e.preventDefault(); const t=e.touches[0]; startSelect(cellFromPoint(t.clientX, t.clientY)); }, { passive: false });
-document.addEventListener('touchmove',  e => { e.preventDefault(); const t=e.touches[0]; extendSelect(cellFromPoint(t.clientX, t.clientY), t.clientX, t.clientY); }, { passive: false });
-document.addEventListener('touchend',   () => endSelect());
+document.addEventListener('touchstart', e => {
+  if (document.getElementById('screen-game').classList.contains('hidden')) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  startSelect(cellFromPoint(t.clientX, t.clientY));
+}, { passive: false });
+document.addEventListener('touchmove', e => {
+  if (document.getElementById('screen-game').classList.contains('hidden')) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  extendSelect(cellFromPoint(t.clientX, t.clientY), t.clientX, t.clientY);
+}, { passive: false });
+document.addEventListener('touchend', () => endSelect());
 
 // ─── Overlay ──────────────────────────────────────────────────────────────────
 function hideOverlay() { document.getElementById('overlay').classList.add('hidden'); }
