@@ -936,13 +936,15 @@ document.addEventListener('mousedown',  e => startSelect(cellFromEl(e.target)));
 document.addEventListener('mousemove',  e => { if (isDragging) extendSelect(cellFromEl(e.target), e.clientX, e.clientY); });
 document.addEventListener('mouseup',    () => endSelect());
 document.addEventListener('touchstart', e => {
-  if (document.getElementById('screen-game').classList.contains('hidden')) return;
+  const boardContainer = document.getElementById('board-container');
+  if (!boardContainer || !boardContainer.contains(e.target)) return;
   e.preventDefault();
   const t = e.touches[0];
   startSelect(cellFromPoint(t.clientX, t.clientY));
 }, { passive: false });
 document.addEventListener('touchmove', e => {
-  if (document.getElementById('screen-game').classList.contains('hidden')) return;
+  const boardContainer = document.getElementById('board-container');
+  if (!boardContainer || !boardContainer.contains(e.target)) return;
   e.preventDefault();
   const t = e.touches[0];
   extendSelect(cellFromPoint(t.clientX, t.clientY), t.clientX, t.clientY);
