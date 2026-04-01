@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Poker Chain</title>
-  <!-- Telegram Mini App SDK -->
+  <!-- Telegram Mini App SDK (must load first so i18n.js can read language_code) -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- i18n: detects language, injects fonts, exposes t() -->
+  <script src="i18n.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&display=swap" rel="stylesheet">
@@ -44,7 +46,7 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Chapters
+          <span data-i18n="back_chapters">Chapters</span>
         </button>
         <div id="lgv-chapter-title"></div>
       </div>
@@ -118,17 +120,17 @@
     <div id="tools-row">
       <button class="tool-btn" id="btn-undo" onclick="useTool('undo')">
         <span class="tool-icon">↩</span>
-        <span class="tool-label">Undo</span>
+        <span class="tool-label" data-i18n="tool_undo">Undo</span>
         <span class="tool-count" id="undo-count"></span>
       </button>
       <button class="tool-btn" id="btn-timecard" onclick="useTool('timecard')">
         <span class="tool-icon">⏱</span>
-        <span class="tool-label">+60s</span>
+        <span class="tool-label" data-i18n="tool_timecard">+60s</span>
         <span class="tool-count" id="timecard-count"></span>
       </button>
       <button class="tool-btn" id="btn-shuffle" onclick="useTool('shuffle')">
         <span class="tool-icon">⇌</span>
-        <span class="tool-label">Shuffle</span>
+        <span class="tool-label" data-i18n="tool_shuffle">Shuffle</span>
         <span class="tool-count" id="shuffle-count"></span>
       </button>
     </div>
@@ -152,12 +154,12 @@
     <div id="lb-box">
       <div id="lb-header">
         <div id="lb-tabs">
-          <button id="lb-tab-level"  class="lb-tab active" onclick="switchLbTab('level')">This Level</button>
-          <button id="lb-tab-global" class="lb-tab"        onclick="switchLbTab('global')">Global</button>
+          <button id="lb-tab-level"  class="lb-tab active" onclick="switchLbTab('level')" data-i18n="lb_tab_level">This Level</button>
+          <button id="lb-tab-global" class="lb-tab"        onclick="switchLbTab('global')" data-i18n="lb_tab_global">Global</button>
         </div>
         <button id="lb-close" onclick="closeLeaderboard()">✕</button>
       </div>
-      <div id="lb-loading">Loading…</div>
+      <div id="lb-loading" data-i18n="lb_loading">Loading…</div>
       <div id="lb-list"></div>
       <div id="lb-my-rank" class="hidden"></div>
     </div>
@@ -172,13 +174,13 @@
       <div id="sm-price">
         <span id="sm-stars-amount"></span>
         <span class="star-icon">⭐</span>
-        <span id="sm-label">Telegram Stars</span>
+        <span id="sm-label" data-i18n="stars_label">Telegram Stars</span>
       </div>
       <div id="sm-btns">
-        <button class="ov-btn primary" id="sm-pay-btn" onclick="payWithStars()">
+        <button class="ov-btn primary" id="sm-pay-btn" onclick="payWithStars()" data-i18n="stars_pay">
           Pay with Stars ⭐
         </button>
-        <button class="ov-btn secondary" onclick="closeStarsModal()">Cancel</button>
+        <button class="ov-btn secondary" onclick="closeStarsModal()" data-i18n="btn_cancel">Cancel</button>
       </div>
     </div>
   </div>
@@ -187,13 +189,13 @@
   <div id="guide-modal" class="hidden">
     <div id="guide-box">
       <div id="guide-header">
-        <div id="guide-title">How to Play</div>
+        <div id="guide-title" data-i18n="guide_title">How to Play</div>
         <button id="guide-close" onclick="closeHelpGuide()">✕</button>
       </div>
       <div id="guide-content">
 
         <div class="guide-sec">
-          <div class="guide-sec-hd">Connecting Cards</div>
+          <div class="guide-sec-hd" data-i18n="guide_connecting">Connecting Cards</div>
           <div class="guide-con-list">
             <div class="guide-con-row">
               <div class="guide-con-demo">
@@ -203,7 +205,7 @@
                 <div class="tut-arrow"></div>
                 <div class="tut-card red">3<span>♥</span></div>
               </div>
-              <div class="guide-con-label">Same suit</div>
+              <div class="guide-con-label" data-i18n="guide_same_suit">Same suit</div>
             </div>
             <div class="guide-con-row">
               <div class="guide-con-demo">
@@ -213,7 +215,7 @@
                 <div class="tut-arrow"></div>
                 <div class="tut-card red">K<span>♦</span></div>
               </div>
-              <div class="guide-con-label">Same rank</div>
+              <div class="guide-con-label" data-i18n="guide_same_rank">Same rank</div>
             </div>
             <div class="guide-con-row">
               <div class="guide-con-demo">
@@ -223,14 +225,14 @@
                 <div class="tut-arrow"></div>
                 <div class="tut-card red">7<span>♦</span></div>
               </div>
-              <div class="guide-con-label">Consecutive</div>
+              <div class="guide-con-label" data-i18n="guide_consecutive">Consecutive</div>
             </div>
           </div>
-          <div class="guide-note">Slide to chain 3+ adjacent cards · longer = higher score</div>
+          <div class="guide-note" data-i18n="guide_chain_note">Slide to chain 3+ adjacent cards · longer = higher score</div>
         </div>
 
         <div class="guide-sec">
-          <div class="guide-sec-hd">Scoring</div>
+          <div class="guide-sec-hd" data-i18n="guide_scoring">Scoring</div>
           <div class="tut-pts-bar" style="margin-bottom:10px">
             <div class="tut-pts-cell"><span class="tpc-n">3</span><span class="tpc-p">100</span></div>
             <div class="tut-pts-cell"><span class="tpc-n">5</span><span class="tpc-p">500</span></div>
@@ -238,20 +240,20 @@
             <div class="tut-pts-cell hi"><span class="tpc-n">10+</span><span class="tpc-p">1500+</span></div>
           </div>
           <div class="tut-bonus-list">
-            <div class="tut-brow"><span class="tut-beg">♠♣♥</span><span class="tut-bname">Same suit</span><span class="tut-bx">×1.2</span></div>
-            <div class="tut-brow"><span class="tut-beg">3·4·5</span><span class="tut-bname">Run (consecutive)</span><span class="tut-bx">×1.3</span></div>
-            <div class="tut-brow"><span class="tut-beg">7·7·7</span><span class="tut-bname">3 of a kind</span><span class="tut-bx">×1.4</span></div>
-            <div class="tut-brow top"><span class="tut-beg red">♥A KQ</span><span class="tut-bname">Royal Flush</span><span class="tut-bx gold">×2.0</span></div>
+            <div class="tut-brow"><span class="tut-beg">♠♣♥</span><span class="tut-bname" data-i18n="guide_same_suit">Same suit</span><span class="tut-bx">×1.2</span></div>
+            <div class="tut-brow"><span class="tut-beg">3·4·5</span><span class="tut-bname" data-i18n="guide_run">Run (consecutive)</span><span class="tut-bx">×1.3</span></div>
+            <div class="tut-brow"><span class="tut-beg">7·7·7</span><span class="tut-bname" data-i18n="guide_set_3">3 of a kind</span><span class="tut-bx">×1.4</span></div>
+            <div class="tut-brow top"><span class="tut-beg red">♥A KQ</span><span class="tut-bname" data-i18n="guide_royal">Royal Flush</span><span class="tut-bx gold">×2.0</span></div>
           </div>
         </div>
 
         <div class="guide-sec">
-          <div class="guide-sec-hd">Tips</div>
+          <div class="guide-sec-hd" data-i18n="guide_tips">Tips</div>
           <div class="guide-tips">
-            <div class="guide-tip">⏱ Each card cleared adds +1s to the clock</div>
-            <div class="guide-tip">🃏 Joker joins any chain and stacks ×1.1 on top of other bonuses</div>
-            <div class="guide-tip">⭐ Score 1×, 1.5×, 2× the target for 1–3 stars</div>
-            <div class="guide-tip">✦ 3-star all 10 levels in a chapter to unlock Power Cards — each mastered rank counts as +1 chain length</div>
+            <div class="guide-tip" data-i18n="tip_timer">⏱ Each card cleared adds +1s to the clock</div>
+            <div class="guide-tip" data-i18n="tip_joker">🃏 Joker joins any chain and stacks ×1.1 on top of other bonuses</div>
+            <div class="guide-tip" data-i18n="tip_stars">⭐ Score 1×, 1.5×, 2× the target for 1–3 stars</div>
+            <div class="guide-tip" data-i18n="tip_power">✦ 3-star all 10 levels in a chapter to unlock Power Cards — each mastered rank counts as +1 chain length</div>
           </div>
         </div>
 

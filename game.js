@@ -167,9 +167,9 @@ const MAX_TIME            = 180;  // time cap
 const TOOL_STARS = { shuffle: 5, undo: 3 };
 
 const TOOL_INFO = {
-  shuffle:  { icon: '⇌', name: 'Shuffle',   desc: 'Rearrange all face-up cards on the board.' },
-  undo:     { icon: '↩', name: 'Undo',      desc: 'Roll back your last move.' },
-  timecard: { icon: '⏱', name: '+60s Card', desc: 'Add 60 seconds — no cap applied.' },
+  shuffle:  { icon: '⇌', get name() { return t('tool_shuffle_name'); }, get desc() { return t('tool_shuffle_desc'); } },
+  undo:     { icon: '↩', get name() { return t('tool_undo_name');    }, get desc() { return t('tool_undo_desc');     } },
+  timecard: { icon: '⏱', get name() { return t('tool_timecard_name');}, get desc() { return t('tool_timecard_desc');} },
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -311,7 +311,7 @@ function openChapter(chId) {
   document.getElementById('chapter-grid-view').classList.add('hidden');
   document.getElementById('level-grid-view').classList.remove('hidden');
   if (ch) {
-    document.getElementById('lgv-chapter-title').textContent = `${ch.symbol}  ${ch.name}`;
+    document.getElementById('lgv-chapter-title').textContent = `${ch.symbol}  ${t('ch_' + ch.id)}`;
   }
   renderLevelGrid();
 }
@@ -375,7 +375,7 @@ function renderChapterGrid() {
         </div>
         <div class="chc-body">
           <div class="chc-suit-big">${centerSymbol}</div>
-          <div class="chc-chapter-name">${ch.name}</div>
+          <div class="chc-chapter-name">${t('ch_' + ch.id)}</div>
           ${ch.rank === 15 ? '<div class="chc-joker-badge">🃏</div>' : ''}
         </div>
         <div class="chc-progress">
@@ -412,8 +412,8 @@ function renderLevelGrid() {
   const header = document.createElement('div');
   header.className = 'chapter-grid-header';
   header.innerHTML = mastered
-    ? `<span class="cgh-badge">✦ Power Unlocked</span>`
-    : `<span class="cgh-hint">3★ all 10 to unlock Power Card</span>`;
+    ? `<span class="cgh-badge">${t('power_unlocked_badge')}</span>`
+    : `<span class="cgh-hint">${t('power_hint')}</span>`;
   grid.appendChild(header);
 
   for (let id = ch.from; id <= ch.to; id++) {
@@ -528,8 +528,8 @@ function startLevel(id) {
   closeStarsModal();
 
   // Header
-  document.getElementById('level-label').textContent  = `Level ${currentLevel.id} · ${currentLevel.chapterName}`;
-  document.getElementById('level-name').textContent   = `Target ${currentLevel.target.toLocaleString()}`;
+  document.getElementById('level-label').textContent  = `${t('level_label', currentLevel.id)} · ${t('ch_' + currentLevel.chapter)}`;
+  document.getElementById('level-name').textContent   = t('target_label', currentLevel.target.toLocaleString(LOCALE));
   document.getElementById('target-value').textContent = currentLevel.target.toLocaleString();
 
   // Telegram BackButton
@@ -624,14 +624,13 @@ function settleGame() {
 function showWinRank(rank, total) {
   const el = document.getElementById('win-rank');
   if (!el) return;
-  const medal = rank === 1 ? '🥇 ' : rank === 2 ? '🥈 ' : rank === 3 ? '🥉 ' : '';
-  el.textContent = `${medal}Global #${rank.toLocaleString()} of ${total.toLocaleString()} players`;
+  el.textContent = t('win_rank_text', rank, total);
   el.classList.remove('hidden');
 }
 
 // ─── HUD ──────────────────────────────────────────────────────────────────────
 function updateHUD() {
-  document.getElementById('score-value').textContent = score.toLocaleString();
+  document.getElementById('score-value').textContent = score.toLocaleString(LOCALE);
   const pct = Math.min(score / currentLevel.target * 100, 100);
   document.getElementById('progress-fill').style.width = pct + '%';
 }
@@ -708,7 +707,7 @@ function showScorePopup(cells, gained, mult = 1.0, powerBonus = 0) {
   pop.style.top  = y + 'px';
 
   let inner = `<span class="sp-points">+${gained}</span>`;
-  if (powerBonus > 0) inner += `<span class="sp-power">+${powerBonus} POWER</span>`;
+  if (powerBonus > 0) inner += `<span class="sp-power">+${powerBonus} PWR</span>`;
   if (multStr) inner += `<span class="sp-mult">${multStr}</span>`;
   if (label)   inner += `<span class="pop-type">${label}</span>`;
   pop.innerHTML = inner;
@@ -937,7 +936,7 @@ function eliminateCells(cells) {
 
     if (score >= currentLevel.target && !window._targetToastShown) {
       window._targetToastShown = true;
-      showToast('Target reached! Keep going for more stars');
+      showToast(t('toast_target'));
       playSound('target');
     }
     setTimeout(checkStuck, 350);
@@ -1066,8 +1065,8 @@ function showWin(finalScore, earned) {
   const rankEl = document.getElementById('win-rank');
   if (rankEl) rankEl.classList.add('hidden');
   document.getElementById('overlay-emoji').textContent = earned === 3 ? '🎉' : '✨';
-  document.getElementById('overlay-title').textContent = 'Level Clear!';
-  document.getElementById('overlay-sub').textContent   = `Score: ${finalScore.toLocaleString()}`;
+  document.getElementById('overlay-title').textContent = t('win_title');
+  document.getElementById('overlay-sub').textContent   = t('win_score', finalScore.toLocaleString(LOCALE));
   const starsRow = document.getElementById('stars-row');
   starsRow.innerHTML = '';
   for (let i = 1; i <= 3; i++) {
@@ -1079,11 +1078,11 @@ function showWin(finalScore, earned) {
   const hasNext = currentLevel.id < LEVELS.length;
   document.getElementById('overlay-btns').innerHTML = `
     <button class="ov-btn primary" onclick="${hasNext ? `startLevel(${currentLevel.id + 1})` : 'showLevelSelect()'}">
-      ${hasNext ? 'Next Level' : 'Back'}
+      ${hasNext ? t('btn_next') : t('btn_back')}
     </button>
-    <button class="ov-btn secondary" onclick="startLevel(${currentLevel.id})">Retry</button>
-    <button class="ov-btn secondary" onclick="openLevelLeaderboard(${currentLevel.id})"${!API_READY ? ' style="opacity:.4;pointer-events:none"' : ''}>🏆 Rankings</button>
-    <button class="ov-btn secondary" onclick="showLevelSelect()">Back</button>
+    <button class="ov-btn secondary" onclick="startLevel(${currentLevel.id})">${t('btn_retry')}</button>
+    <button class="ov-btn secondary" onclick="openLevelLeaderboard(${currentLevel.id})"${!API_READY ? ' style="opacity:.4;pointer-events:none"' : ''}>${t('btn_leaderboard')}</button>
+    <button class="ov-btn secondary" onclick="showLevelSelect()">${t('btn_back')}</button>
   `;
   document.getElementById('overlay').classList.remove('hidden');
   starsRow.querySelectorAll('.star:not(.empty-star)').forEach((s, i) => {
@@ -1096,12 +1095,12 @@ function showLose(finalScore, target) {
   lockScroll();
   playSound('lose');
   document.getElementById('overlay-emoji').textContent = '⏱';
-  document.getElementById('overlay-title').textContent = "Time's Up";
-  document.getElementById('overlay-sub').textContent   = `${finalScore.toLocaleString()} / ${target.toLocaleString()}`;
+  document.getElementById('overlay-title').textContent = t('lose_title');
+  document.getElementById('overlay-sub').textContent   = `${finalScore.toLocaleString(LOCALE)} / ${target.toLocaleString(LOCALE)}`;
   document.getElementById('stars-row').innerHTML = '';
   document.getElementById('overlay-btns').innerHTML = `
-    <button class="ov-btn primary"   onclick="startLevel(${currentLevel.id})">Try Again</button>
-    <button class="ov-btn secondary" onclick="showLevelSelect()">Levels</button>
+    <button class="ov-btn primary"   onclick="startLevel(${currentLevel.id})">${t('btn_again')}</button>
+    <button class="ov-btn secondary" onclick="showLevelSelect()">${t('btn_levels')}</button>
   `;
   document.getElementById('overlay').classList.remove('hidden');
 }
@@ -1135,10 +1134,10 @@ function checkStuck() {
   if (hasValidMove()) return;
   if (toolsLeft.shuffle > 0) {
     toolsLeft.shuffle--;
-    showToast('No moves — auto shuffling');
+    showToast(t('toast_auto_shuffle'));
     setTimeout(() => executeShuffle(), 700);
   } else {
-    showToast('No moves — free shuffle');
+    showToast(t('toast_free_shuffle'));
     setTimeout(() => executeShuffle(true), 700);
   }
 }
@@ -1189,7 +1188,7 @@ function applyUndo() {
   updateToolsUI();
   renderBoard(new Set());
   clearConnectionLine();
-  showToast('Undone');
+  showToast(t('toast_undone'));
   setTimeout(checkStuck, 300);
 }
 
@@ -1203,7 +1202,7 @@ function executeShuffle(free = false) {
   faceUpPos.forEach(([r,c], i) => { board[r][c] = shuffled[i]; });
   playSound('shuffle');
   renderBoard(new Set(faceUpPos.map(([r,c]) => `${r},${c}`)));
-  showToast('Shuffled');
+  showToast(t('toast_shuffled'));
   setTimeout(checkStuck, 400);
 }
 
@@ -1226,7 +1225,7 @@ function showAdModal(toolType) {
     // For now: simulate instant reward
     closeStarsModal();
     grantTool(toolType);
-    showToast('Ad watched — tool granted!');
+    showToast(t('toast_ad_granted'));
     // Restore button for stars flow
     payBtn.textContent = 'Pay with Stars ⭐';
     payBtn.onclick = payWithStars;
@@ -1280,7 +1279,7 @@ function payWithStars() {
           grantTool(toolType);
         } else if (status === 'cancelled' || status === 'failed') {
           closeStarsModal();
-          showToast('Payment cancelled');
+          showToast(t('toast_pay_cancelled'));
         }
       });
       return;
@@ -1299,7 +1298,7 @@ function grantTool(toolType) {
   closeStarsModal();
   updateToolsUI();
   const info = TOOL_INFO[toolType];
-  showToast(`${info.icon} ${info.name} added!`);
+  showToast(t('toast_tool_added', info.name));
 }
 
 // ─── Audio ────────────────────────────────────────────────────────────────────
@@ -1374,8 +1373,8 @@ function showTutorialPopup() {
   modal.id = 'tut-modal';
   modal.innerHTML = `
     <div id="tut-box">
-      <div id="tut-title">How to Connect</div>
-      <p id="tut-sub">Slide to chain 3 or more adjacent cards</p>
+      <div id="tut-title">${t('tut_title')}</div>
+      <p id="tut-sub">${t('tut_sub')}</p>
       <div id="tut-rows">
         <div class="tut-row" style="--d:0s">
           <div class="tut-cards">
@@ -1385,7 +1384,7 @@ function showTutorialPopup() {
             <div class="tut-arrow"></div>
             <div class="tut-card red">Q<span>♥</span></div>
           </div>
-          <div class="tut-label">Same Suit</div>
+          <div class="tut-label">${t('tut_same_suit')}</div>
         </div>
         <div class="tut-row" style="--d:0.45s">
           <div class="tut-cards">
@@ -1395,7 +1394,7 @@ function showTutorialPopup() {
             <div class="tut-arrow"></div>
             <div class="tut-card red">K<span>♦</span></div>
           </div>
-          <div class="tut-label">Same Rank</div>
+          <div class="tut-label">${t('tut_same_rank')}</div>
         </div>
         <div class="tut-row" style="--d:0.9s">
           <div class="tut-cards">
@@ -1405,10 +1404,10 @@ function showTutorialPopup() {
             <div class="tut-arrow"></div>
             <div class="tut-card red">7<span>♦</span></div>
           </div>
-          <div class="tut-label">Consecutive</div>
+          <div class="tut-label">${t('tut_consecutive')}</div>
         </div>
       </div>
-      <button id="tut-btn" onclick="closeTutorialPopup()">Got it!</button>
+      <button id="tut-btn" onclick="closeTutorialPopup()">${t('tut_got_it')}</button>
     </div>
   `;
   document.body.appendChild(modal);
@@ -1436,31 +1435,31 @@ function showScoringTutorial() {
   modal.id = 'tut-modal';
   modal.innerHTML = `
     <div id="tut-box">
-      <div id="tut-title">How to Score</div>
+      <div id="tut-title">${t('tut2_title')}</div>
 
       <div class="tut-sec">
-        <div class="tut-sec-hd">Chain length → base points</div>
+        <div class="tut-sec-hd">${t('tut2_chain_hd')}</div>
         <div class="tut-pts-bar">
           <div class="tut-pts-cell"><span class="tpc-n">3</span><span class="tpc-p">100</span></div>
           <div class="tut-pts-cell"><span class="tpc-n">5</span><span class="tpc-p">500</span></div>
-          <div class="tut-pts-cell"><span class="tpc-n">7</span><span class="tpc-p">1000</span></div>
-          <div class="tut-pts-cell hi"><span class="tpc-n">10+</span><span class="tpc-p">1600+</span></div>
+          <div class="tut-pts-cell"><span class="tpc-n">7</span><span class="tpc-p">900</span></div>
+          <div class="tut-pts-cell hi"><span class="tpc-n">10+</span><span class="tpc-p">1500+</span></div>
         </div>
       </div>
 
       <div class="tut-sec">
-        <div class="tut-sec-hd">Bonus multipliers</div>
+        <div class="tut-sec-hd">${t('tut2_mult_hd')}</div>
         <div class="tut-bonus-list">
-          <div class="tut-brow"><span class="tut-beg">♠♣♥</span><span class="tut-bname">Same suit</span><span class="tut-bx">×1.2</span></div>
-          <div class="tut-brow"><span class="tut-beg">3·4·5</span><span class="tut-bname">Run (consecutive)</span><span class="tut-bx">×1.3</span></div>
-          <div class="tut-brow"><span class="tut-beg">7·7·7</span><span class="tut-bname">3 of a kind</span><span class="tut-bx">×1.4</span></div>
-          <div class="tut-brow top"><span class="tut-beg red">♥A KQ</span><span class="tut-bname">Royal Flush</span><span class="tut-bx gold">×2.0</span></div>
+          <div class="tut-brow"><span class="tut-beg">♠♣♥</span><span class="tut-bname">${t('tut2_same_suit')}</span><span class="tut-bx">×1.2</span></div>
+          <div class="tut-brow"><span class="tut-beg">3·4·5</span><span class="tut-bname">${t('tut2_run')}</span><span class="tut-bx">×1.3</span></div>
+          <div class="tut-brow"><span class="tut-beg">7·7·7</span><span class="tut-bname">${t('tut2_set_3')}</span><span class="tut-bx">×1.4</span></div>
+          <div class="tut-brow top"><span class="tut-beg red">♥A KQ</span><span class="tut-bname">${t('tut2_royal')}</span><span class="tut-bx gold">×2.0</span></div>
         </div>
       </div>
 
-      <div class="tut-footer-tip">⏱ Each card cleared adds +1s to the clock</div>
+      <div class="tut-footer-tip">${t('tut2_tip')}</div>
 
-      <button id="tut-btn" onclick="closeScoringTutorial()">Got it!</button>
+      <button id="tut-btn" onclick="closeScoringTutorial()">${t('tut_got_it')}</button>
     </div>
   `;
   document.body.appendChild(modal);
@@ -1488,12 +1487,9 @@ function showMasteryUnlock(ch) {
   modal.innerHTML = `
     <div id="mastery-box">
       <div id="mastery-symbol">${ch.symbol}</div>
-      <div id="mastery-title">Power Unlocked!</div>
-      <div id="mastery-desc">
-        Every <strong>${ch.symbol}</strong> in a chain now counts as
-        <strong>+1 extra card</strong> — making your chains longer and your scores bigger.
-      </div>
-      <button id="mastery-btn" onclick="closeMasteryModal()">Awesome!</button>
+      <div id="mastery-title">${t('mastery_title')}</div>
+      <div id="mastery-desc">${t('mastery_desc', ch.symbol)}</div>
+      <button id="mastery-btn" onclick="closeMasteryModal()">${t('mastery_btn')}</button>
     </div>
   `;
   document.body.appendChild(modal);
@@ -1527,18 +1523,18 @@ function rankLabel(i) {
 function renderLbRows(rows, myId) {
   const list = document.getElementById('lb-list');
   if (!rows.length) {
-    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink-dim);font-size:14px">No scores yet — be the first!</div>';
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--ink-dim);font-size:14px">${t('lb_empty')}</div>`;
     return;
   }
   list.innerHTML = rows.map((row, i) => {
     const isMe = row.user_id == myId;
     const score = row.score ?? row.total_score ?? 0;
-    const meta  = row.levels_played != null ? `${row.levels_played} levels · ${row.perfect_levels} ★★★` : ``;
+    const meta  = row.levels_played != null ? t('lb_stats', row.levels_played, row.perfect_levels) : ``;
     return `<div class="lb-row">
       <div class="lb-rank ${rankClass(i)}">${rankLabel(i)}</div>
       <div class="lb-avatar">${avatarHTML(row)}</div>
       <div class="lb-info">
-        <div class="lb-name${isMe ? ' is-me' : ''}">${row.first_name || row.username || 'Player'}${isMe ? ' (you)' : ''}</div>
+        <div class="lb-name${isMe ? ' is-me' : ''}">${row.first_name || row.username || t('lb_player')}${isMe ? ' ' + t('lb_you') : ''}</div>
         ${meta ? `<div class="lb-meta">${meta}</div>` : ''}
       </div>
       <div class="lb-score">${Number(score).toLocaleString()}</div>
@@ -1553,7 +1549,7 @@ function renderMyRank(rank, score, total) {
   el.innerHTML = `
     <div class="lb-rank">#${rank.toLocaleString()}</div>
     <div class="lb-avatar">${me?.photo_url ? `<img src="${me.photo_url}" loading="lazy">` : `<span>${(me?.first_name||'?')[0].toUpperCase()}</span>`}</div>
-    <div class="lb-info"><div class="lb-name is-me">${me?.first_name || 'You'} (you)</div></div>
+    <div class="lb-info"><div class="lb-name is-me">${me?.first_name || t('lb_player_you')} ${t('lb_you')}</div></div>
     <div class="lb-score">${Number(score).toLocaleString()}</div>
   `;
   el.classList.remove('hidden');
@@ -1643,6 +1639,7 @@ function closeHelpGuide() {
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  applyI18n(); // apply translations to static data-i18n elements
   initTelegram();
   showLevelSelect();
 });

@@ -1399,3 +1399,69 @@ body.modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ══════════════════════════════
+   LANGUAGE ADAPTATIONS
+══════════════════════════════ */
+
+/* Thai: Noto Sans Thai font, no letter-spacing (Thai word-breaks differently) */
+html[lang="th"] {
+  --font-ui: 'Noto Sans Thai', system-ui, sans-serif;
+}
+html[lang="th"] body,
+html[lang="th"] button,
+html[lang="th"] .tool-label,
+html[lang="th"] .ov-btn,
+html[lang="th"] #overlay-title,
+html[lang="th"] #overlay-sub,
+html[lang="th"] .guide-tip,
+html[lang="th"] .guide-note,
+html[lang="th"] .guide-con-label,
+html[lang="th"] .guide-sec-hd,
+html[lang="th"] .tut-label,
+html[lang="th"] .tut-sec-hd,
+html[lang="th"] #tut-title,
+html[lang="th"] #tut-sub {
+  font-family: 'Noto Sans Thai', system-ui, sans-serif;
+  letter-spacing: 0 !important;
+}
+
+/* Hindi: Noto Sans Devanagari font */
+html[lang="hi"] {
+  --font-ui: 'Noto Sans Devanagari', system-ui, sans-serif;
+}
+html[lang="hi"] body,
+html[lang="hi"] button,
+html[lang="hi"] .tool-label,
+html[lang="hi"] .ov-btn,
+html[lang="hi"] #overlay-title,
+html[lang="hi"] #overlay-sub,
+html[lang="hi"] .guide-tip,
+html[lang="hi"] .guide-note,
+html[lang="hi"] .guide-con-label,
+html[lang="hi"] .guide-sec-hd,
+html[lang="hi"] .tut-label,
+html[lang="hi"] .tut-sec-hd,
+html[lang="hi"] #tut-title,
+html[lang="hi"] #tut-sub {
+  font-family: 'Noto Sans Devanagari', system-ui, sans-serif;
+  letter-spacing: 0 !important;
+}
+
+/* Russian: tool labels can be long — allow text overflow gracefully */
+html[lang="ru"] .tool-label,
+html[lang="hi"] .tool-label,
+html[lang="th"] .tool-label {
+  font-size: 0.68em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 52px;
+}
+
+/* Chinese: tighter letter-spacing looks better */
+html[lang="zh"] .tool-label { letter-spacing: 0; }
+html[lang="zh"] #level-label { letter-spacing: 0.5px; }
+
+/* Overlay buttons — allow text wrapping for long translations */
+.ov-btn { white-space: normal; min-height: 44px; }
