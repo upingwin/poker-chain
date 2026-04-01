@@ -159,12 +159,13 @@ async function handleGetChampions(from, to, env) {
     )
     SELECT level_id, score, stars, user_id, first_name, username, avatar_url
     FROM ranked
-    WHERE rn = 1
+    WHERE rn <= 3
   `).bind(from, to).all();
 
   const champions = {};
   for (const row of rows.results) {
-    champions[row.level_id] = row;
+    if (!champions[row.level_id]) champions[row.level_id] = [];
+    champions[row.level_id].push(row);
   }
   return json({ champions });
 }

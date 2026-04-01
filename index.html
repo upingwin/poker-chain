@@ -16,19 +16,19 @@
   <!-- ══ HOME / CHAPTER SELECT ══ -->
   <div id="screen-select">
 
-    <!-- Header: player profile ← → stars + trophy -->
+    <!-- Header: player profile ← → stars + trophy + help -->
     <div id="select-header">
       <div id="player-profile" class="hidden">
         <div id="player-avatar"></div>
         <span id="player-name"></span>
       </div>
-      <div id="select-title">Poker Chain</div>
       <div id="select-header-right">
         <div id="select-stars-badge" class="hidden">
           <span id="stars-owned">0</span>
           <span class="star-icon">⭐</span>
         </div>
         <button id="btn-trophy" onclick="openGlobalLeaderboard()" aria-label="Leaderboard">🏆</button>
+        <button id="btn-help" onclick="openHelpGuide()" aria-label="How to play">?</button>
       </div>
     </div>
 
@@ -179,6 +179,81 @@
           Pay with Stars ⭐
         </button>
         <button class="ov-btn secondary" onclick="closeStarsModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HELP / GAME GUIDE MODAL ══ -->
+  <div id="guide-modal" class="hidden">
+    <div id="guide-box">
+      <div id="guide-header">
+        <div id="guide-title">How to Play</div>
+        <button id="guide-close" onclick="closeHelpGuide()">✕</button>
+      </div>
+      <div id="guide-content">
+
+        <div class="guide-sec">
+          <div class="guide-sec-hd">Connecting Cards</div>
+          <div class="guide-con-list">
+            <div class="guide-con-row">
+              <div class="guide-con-demo">
+                <div class="tut-card red">Q<span>♥</span></div>
+                <div class="tut-arrow"></div>
+                <div class="tut-card red">8<span>♥</span></div>
+                <div class="tut-arrow"></div>
+                <div class="tut-card red">3<span>♥</span></div>
+              </div>
+              <div class="guide-con-label">Same suit</div>
+            </div>
+            <div class="guide-con-row">
+              <div class="guide-con-demo">
+                <div class="tut-card black">K<span>♠</span></div>
+                <div class="tut-arrow"></div>
+                <div class="tut-card red">K<span>♥</span></div>
+                <div class="tut-arrow"></div>
+                <div class="tut-card red">K<span>♦</span></div>
+              </div>
+              <div class="guide-con-label">Same rank</div>
+            </div>
+            <div class="guide-con-row">
+              <div class="guide-con-demo">
+                <div class="tut-card black">5<span>♠</span></div>
+                <div class="tut-arrow"></div>
+                <div class="tut-card red">6<span>♥</span></div>
+                <div class="tut-arrow"></div>
+                <div class="tut-card red">7<span>♦</span></div>
+              </div>
+              <div class="guide-con-label">Consecutive</div>
+            </div>
+          </div>
+          <div class="guide-note">Slide to chain 3+ adjacent cards · longer = higher score</div>
+        </div>
+
+        <div class="guide-sec">
+          <div class="guide-sec-hd">Scoring</div>
+          <div class="tut-pts-bar" style="margin-bottom:10px">
+            <div class="tut-pts-cell"><span class="tpc-n">3</span><span class="tpc-p">100</span></div>
+            <div class="tut-pts-cell"><span class="tpc-n">5</span><span class="tpc-p">500</span></div>
+            <div class="tut-pts-cell"><span class="tpc-n">7</span><span class="tpc-p">1000</span></div>
+            <div class="tut-pts-cell hi"><span class="tpc-n">10+</span><span class="tpc-p">1600+</span></div>
+          </div>
+          <div class="tut-bonus-list">
+            <div class="tut-brow"><span class="tut-beg">♠♣♥</span><span class="tut-bname">Same suit</span><span class="tut-bx">×1.2</span></div>
+            <div class="tut-brow"><span class="tut-beg">3·4·5</span><span class="tut-bname">Run (consecutive)</span><span class="tut-bx">×1.3</span></div>
+            <div class="tut-brow"><span class="tut-beg">7·7·7</span><span class="tut-bname">3 of a kind</span><span class="tut-bx">×1.4</span></div>
+            <div class="tut-brow top"><span class="tut-beg red">♥A KQ</span><span class="tut-bname">Royal Flush</span><span class="tut-bx gold">×2.0</span></div>
+          </div>
+        </div>
+
+        <div class="guide-sec">
+          <div class="guide-sec-hd">Tips</div>
+          <div class="guide-tips">
+            <div class="guide-tip">⏱ Each card cleared adds +1s to the clock</div>
+            <div class="guide-tip">🃏 Joker joins any chain and adds ×1.1 bonus</div>
+            <div class="guide-tip">⭐ Score 1×, 2×, 3× the target for 1–3 stars</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

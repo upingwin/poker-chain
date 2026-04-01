@@ -54,9 +54,9 @@ async function fetchGlobal() {
 // 15 chapters × 10 levels = 150 total
 // rank: 1-13 = card rank, 14 = Small Joker chapter, 15 = Big Joker chapter
 const CHAPTERS = [
-  { id:  1, rank:  1, symbol: 'A',  name: 'Aces',        from:   1, to:  10, targetMin:  1500, targetMax:  2500, lockedMin:  0, lockedMax:  2, jokers: 0 },
-  { id:  2, rank:  2, symbol: '2',  name: 'Twos',        from:  11, to:  20, targetMin:  2500, targetMax:  4000, lockedMin:  2, lockedMax:  4, jokers: 0 },
-  { id:  3, rank:  3, symbol: '3',  name: 'Threes',      from:  21, to:  30, targetMin:  4000, targetMax:  6000, lockedMin:  3, lockedMax:  5, jokers: 0 },
+  { id:  1, rank:  1, symbol: 'A',  name: 'Aces',        from:   1, to:  10, targetMin:  1500, targetMax:  2500, lockedMin:  0, lockedMax:  2, jokers: 1 },
+  { id:  2, rank:  2, symbol: '2',  name: 'Twos',        from:  11, to:  20, targetMin:  2500, targetMax:  4000, lockedMin:  2, lockedMax:  4, jokers: 1 },
+  { id:  3, rank:  3, symbol: '3',  name: 'Threes',      from:  21, to:  30, targetMin:  4000, targetMax:  6000, lockedMin:  3, lockedMax:  5, jokers: 1 },
   { id:  4, rank:  4, symbol: '4',  name: 'Fours',       from:  31, to:  40, targetMin:  6000, targetMax:  8500, lockedMin:  4, lockedMax:  6, jokers: 1 },
   { id:  5, rank:  5, symbol: '5',  name: 'Fives',       from:  41, to:  50, targetMin:  8500, targetMax: 11500, lockedMin:  5, lockedMax:  7, jokers: 1 },
   { id:  6, rank:  6, symbol: '6',  name: 'Sixes',       from:  51, to:  60, targetMin: 11500, targetMax: 15000, lockedMin:  6, lockedMax:  8, jokers: 1 },
@@ -422,7 +422,7 @@ function renderLevelGrid() {
       el.innerHTML = `
         <div class="lc-num">${localNum}</div>
         <div class="lc-stars">${starStr(stars)}</div>
-        <div class="lc-champion" style="display:none"></div>
+        <div class="lc-champions"></div>
       `;
       el.addEventListener('click', () => startLevel(id));
     } else {
@@ -438,21 +438,28 @@ function renderLevelGrid() {
   const firstCurrent = grid.querySelector('.current');
   if (firstCurrent) setTimeout(() => firstCurrent.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 100);
 
-  // Load champion avatars async
+  // Load top-3 champion avatars async
   if (API_READY) {
     fetchChampions(ch.from, ch.to).then(champions => {
-      Object.entries(champions).forEach(([lvlId, champ]) => {
+      Object.entries(champions).forEach(([lvlId, champsArr]) => {
         const cell = grid.querySelector(`[data-level="${lvlId}"]`);
         if (!cell) return;
-        const avatarEl = cell.querySelector('.lc-champion');
-        if (!avatarEl) return;
-        if (champ.avatar_url) {
-          avatarEl.innerHTML = `<img src="${champ.avatar_url}" loading="lazy" onerror="this.parentNode.style.display='none'">`;
-        } else {
-          avatarEl.textContent = (champ.first_name || '?')[0].toUpperCase();
-        }
-        avatarEl.title = `${champ.first_name}: ${Number(champ.score).toLocaleString()}`;
-        avatarEl.style.display = '';
+        const container = cell.querySelector('.lc-champions');
+        if (!container) return;
+        const top3 = Array.isArray(champsArr) ? champsArr.slice(0, 3) : [champsArr];
+        top3.forEach(champ => {
+          const av = document.createElement('div');
+          av.className = 'lc-champ-av';
+          av.title = `${champ.first_name}: ${Number(champ.score).toLocaleString()}`;
+          if (champ.avatar_url) {
+            const initials = (champ.first_name || '?')[0].toUpperCase();
+            av.innerHTML = `<img src="${champ.avatar_url}" loading="lazy" onerror="this.parentNode.textContent='${initials}'">`;
+          } else {
+            av.textContent = (champ.first_name || '?')[0].toUpperCase();
+          }
+          container.appendChild(av);
+        });
+        if (top3.length) container.style.display = 'flex';
       });
     });
   }
@@ -1587,7 +1594,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lb-modal')?.addEventListener('click', e => {
     if (e.target === document.getElementById('lb-modal')) closeLeaderboard();
   });
+  document.getElementById('guide-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('guide-modal')) closeHelpGuide();
+  });
 });
+
+// ─── Help / Game Guide ────────────────────────────────────────────────────────
+function openHelpGuide() {
+  document.getElementById('guide-modal').classList.remove('hidden');
+}
+function closeHelpGuide() {
+  document.getElementById('guide-modal').classList.add('hidden');
+}
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
