@@ -550,6 +550,7 @@ function startLevel(id) {
 
 function goBack() {
   if (isDragging) { isDragging = false; clearSelection(); }
+  gameOver = true; // discard current game — blocks any pending settleGame callbacks
   stopTimer();
   showLevelSelect();
 }
