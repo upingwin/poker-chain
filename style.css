@@ -87,7 +87,9 @@ body.modal-open { overflow: hidden; }
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+#screen-select::-webkit-scrollbar { display: none; }
 
 /* ── Select header ── */
 #select-header {
@@ -243,6 +245,13 @@ body.modal-open { overflow: hidden; }
   text-transform: uppercase;
   color: var(--ink-dim);
   white-space: nowrap;
+}
+
+.chc-joker-badge {
+  font-size: clamp(11px, 2.2vw, 14px);
+  margin-top: 3px;
+  opacity: 0.75;
+  line-height: 1;
 }
 
 /* Stars progress at bottom */

@@ -376,6 +376,7 @@ function renderChapterGrid() {
         <div class="chc-body">
           <div class="chc-suit-big">${centerSymbol}</div>
           <div class="chc-chapter-name">${ch.name}</div>
+          ${ch.rank === 15 ? '<div class="chc-joker-badge">🃏</div>' : ''}
         </div>
         <div class="chc-progress">
           <div class="chc-stars-count">${earned}/30★</div>
