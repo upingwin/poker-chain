@@ -209,6 +209,82 @@ async function handleGlobal(request, env) {
   return json({ top: rows.results, my_rank: myRank, my_score: myScore });
 }
 
+// ─── POST /api/invoice ────────────────────────────────────────────────────────
+// Body: { tool_type: 'shuffle'|'undo'|'timecard', qty: 5|10|20, stars: 30|50|90 }
+// Returns: { url }  — invoice link to pass to WebApp.openInvoice()
+//
+// SETUP: After deploying, register the webhook once:
+//   curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://<worker>.workers.dev/webhook"
+const VALID_PACKS = [
+  { qty: 5,  stars: 30 },
+  { qty: 10, stars: 50 },
+  { qty: 20, stars: 90 },
+];
+const TOOL_LABELS = {
+  shuffle:  'Shuffle',
+  undo:     'Undo',
+  timecard: '+60s Card',
+};
+
+async function handleCreateInvoice(request, env) {
+  const user = await getAuthUser(request, env);
+  if (!user) return json({ error: 'Unauthorized' }, 401);
+
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ error: 'Bad JSON' }, 400); }
+
+  const { tool_type, qty, stars } = body;
+  if (!TOOL_LABELS[tool_type]) return json({ error: 'Invalid tool' }, 400);
+  if (!VALID_PACKS.some(p => p.qty === qty && p.stars === stars))
+    return json({ error: 'Invalid pack' }, 400);
+
+  const toolLabel = TOOL_LABELS[tool_type];
+  const payload   = `tool:${tool_type}:${qty}:${user.id}`;
+
+  const tgResp = await fetch(
+    `https://api.telegram.org/bot${env.BOT_TOKEN}/createInvoiceLink`,
+    {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        title:       `${qty}× ${toolLabel}`,
+        description: `Get ${qty} ${toolLabel} power-ups for Poker Chain`,
+        payload,
+        currency:    'XTR',              // Telegram Stars
+        prices:      [{ label: `${qty}× ${toolLabel}`, amount: stars }],
+      }),
+    }
+  );
+  const tgData = await tgResp.json();
+  if (!tgData.ok) {
+    console.error('createInvoiceLink failed:', tgData);
+    return json({ error: tgData.description || 'Failed to create invoice' }, 500);
+  }
+  return json({ url: tgData.result });
+}
+
+// ─── POST /webhook ────────────────────────────────────────────────────────────
+// Telegram bot webhook — answers pre_checkout_query so Stars payments complete
+async function handleWebhook(request, env) {
+  let body;
+  try { body = await request.json(); }
+  catch { return new Response('ok'); }
+
+  if (body.pre_checkout_query) {
+    await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/answerPreCheckoutQuery`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        pre_checkout_query_id: body.pre_checkout_query.id,
+        ok: true,
+      }),
+    });
+  }
+  // successful_payment — could record purchase here for audit
+  return new Response('ok');
+}
+
 // ─── Router ───────────────────────────────────────────────────────────────────
 export default {
   async fetch(request, env) {
@@ -222,6 +298,12 @@ export default {
     try {
       if (request.method === 'POST' && path === '/api/score') {
         return handleSubmitScore(request, env);
+      }
+      if (request.method === 'POST' && path === '/api/invoice') {
+        return handleCreateInvoice(request, env);
+      }
+      if (request.method === 'POST' && path === '/webhook') {
+        return handleWebhook(request, env);
       }
       const levelMatch = path.match(/^\/api\/level\/(\d+)$/);
       if (request.method === 'GET' && levelMatch) {

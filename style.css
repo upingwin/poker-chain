@@ -1105,17 +1105,61 @@ body.modal-open { overflow: hidden; }
   from { transform: translateY(60px); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
+#sm-header { text-align: center; margin-bottom: 18px; }
 #sm-icon   { font-size: 36px; margin-bottom: 6px; }
 #sm-title  { font-family: 'EB Garamond', Georgia, serif; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-#sm-desc   { font-size: 13px; color: var(--ink-mid); margin-bottom: 14px; line-height: 1.5; }
-#sm-price  {
-  display: flex; align-items: center; justify-content: center; gap: 4px;
-  font-size: 22px; font-weight: 700; color: var(--ink);
-  margin-bottom: 16px;
+#sm-desc   { font-size: 13px; color: var(--ink-mid); line-height: 1.5; }
+
+/* Pack selection */
+#sm-packs {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 14px;
 }
-#sm-price .star-icon  { font-size: 20px; }
-#sm-label  { font-size: 13px; font-weight: 400; color: var(--ink-mid); margin-left: 4px; }
-#sm-btns   { display: flex; flex-direction: column; gap: 8px; }
+.pack-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-md);
+  background: var(--card);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  text-align: left;
+  width: 100%;
+}
+.pack-btn:active { transform: scale(0.98); }
+.pack-best {
+  border-color: oklch(72% 0.12 72);
+  background: oklch(98% 0.025 82);
+}
+.pack-qty {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: 'EB Garamond', Georgia, serif;
+}
+.pack-stars {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-mid);
+}
+.pack-badge {
+  position: absolute;
+  top: -9px;
+  right: 14px;
+  background: oklch(72% 0.12 72);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
 
 /* Shared buttons */
 .ov-btn {

@@ -98,6 +98,9 @@
       toast_ad_granted: 'Ad watched — tool granted!',
       toast_pay_cancelled: 'Payment cancelled',
       toast_tool_added: name => `${name} added!`,
+      pack_get: name => `Get ${name}`,
+      pack_best: 'Best Value',
+      toast_pack_granted: (qty, name) => `${qty}× ${name} added!`,
       level_label: n => `Level ${n}`,
       target_label: n => `Target ${n}`,
       win_rank_text: (r, tot) => {
@@ -162,6 +165,9 @@
       toast_ad_granted: 'Реклама просмотрена — инструмент получен!',
       toast_pay_cancelled: 'Оплата отменена',
       toast_tool_added: name => `${name} добавлен!`,
+      pack_get: name => `Получить ${name}`,
+      pack_best: 'Выгоднее всего',
+      toast_pack_granted: (qty, name) => `${qty}× ${name} добавлено!`,
       level_label: n => `Уровень ${n}`,
       target_label: n => `Цель ${n}`,
       win_rank_text: (r, tot) => {
@@ -226,6 +232,9 @@
       toast_ad_granted: 'Iklan selesai — alat diterima!',
       toast_pay_cancelled: 'Pembayaran dibatalkan',
       toast_tool_added: name => `${name} ditambahkan!`,
+      pack_get: name => `Dapatkan ${name}`,
+      pack_best: 'Paling Hemat',
+      toast_pack_granted: (qty, name) => `${qty}× ${name} ditambahkan!`,
       level_label: n => `Level ${n}`,
       target_label: n => `Target ${n}`,
       win_rank_text: (r, tot) => {
@@ -290,6 +299,9 @@
       toast_ad_granted: 'Anúncio assistido — ferramenta concedida!',
       toast_pay_cancelled: 'Pagamento cancelado',
       toast_tool_added: name => `${name} adicionado!`,
+      pack_get: name => `Obter ${name}`,
+      pack_best: 'Melhor Custo',
+      toast_pack_granted: (qty, name) => `${qty}× ${name} adicionado!`,
       level_label: n => `Nível ${n}`,
       target_label: n => `Alvo ${n}`,
       win_rank_text: (r, tot) => {
@@ -354,6 +366,9 @@
       toast_ad_granted: 'विज्ञापन देखा — टूल मिला!',
       toast_pay_cancelled: 'भुगतान रद्द',
       toast_tool_added: name => `${name} मिला!`,
+      pack_get: name => `${name} पाएं`,
+      pack_best: 'सबसे किफायती',
+      toast_pack_granted: (qty, name) => `${qty}× ${name} मिला!`,
       level_label: n => `लेवल ${n}`,
       target_label: n => `लक्ष्य ${n}`,
       win_rank_text: (r, tot) => {
@@ -418,6 +433,9 @@
       toast_ad_granted: 'Iklan ditonton — alat diterima!',
       toast_pay_cancelled: 'Pembayaran dibatalkan',
       toast_tool_added: name => `${name} ditambah!`,
+      pack_get: name => `Dapatkan ${name}`,
+      pack_best: 'Paling Berbaloi',
+      toast_pack_granted: (qty, name) => `${qty}× ${name} ditambah!`,
       level_label: n => `Tahap ${n}`,
       target_label: n => `Sasaran ${n}`,
       win_rank_text: (r, tot) => {
@@ -482,6 +500,9 @@
       toast_ad_granted: 'ดูโฆษณาแล้ว — ได้รับเครื่องมือ!',
       toast_pay_cancelled: 'ยกเลิกการชำระ',
       toast_tool_added: name => `เพิ่ม ${name} แล้ว!`,
+      pack_get: name => `รับ ${name}`,
+      pack_best: 'คุ้มที่สุด',
+      toast_pack_granted: (qty, name) => `เพิ่ม ${qty}× ${name} แล้ว!`,
       level_label: n => `ด่าน ${n}`,
       target_label: n => `เป้าหมาย ${n}`,
       win_rank_text: (r, tot) => {
@@ -546,6 +567,9 @@
       toast_ad_granted: '廣告已看完 — 道具已獲得！',
       toast_pay_cancelled: '付款已取消',
       toast_tool_added: name => `已獲得 ${name}！`,
+      pack_get: name => `購買 ${name}`,
+      pack_best: '最划算',
+      toast_pack_granted: (qty, name) => `已獲得 ${qty}× ${name}！`,
       level_label: n => `第 ${n} 關`,
       target_label: n => `目標 ${n}`,
       win_rank_text: (r, tot) => {

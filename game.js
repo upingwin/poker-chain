@@ -163,8 +163,12 @@ const TIMER_CIRCUMFERENCE = 2 * Math.PI * 18; // ≈ 113.1
 const LEVEL_TIME_START    = 90;   // seconds at level start
 const MAX_TIME            = 180;  // time cap
 
-// Stars pricing per tool
-const TOOL_STARS = { shuffle: 5, undo: 3 };
+// Tool packs — unified across all tool types
+const TOOL_PACKS = [
+  { qty: 5,  stars: 30 },
+  { qty: 10, stars: 50 },
+  { qty: 20, stars: 90, badge: true }, // best value
+];
 
 const TOOL_INFO = {
   shuffle:  { icon: '⇌', get name() { return t('tool_shuffle_name'); }, get desc() { return t('tool_shuffle_desc'); } },
@@ -642,9 +646,9 @@ function updateToolsUI() {
   bs.disabled = false;
   bu.disabled = !prevState;
   const tc = toolsLeft.timecard || 0;
-  document.getElementById('shuffle-count').textContent  = su > 0 ? `×${su}` : 'Ad';
-  document.getElementById('undo-count').textContent     = uu > 0 ? `×${uu}` : (prevState ? 'Ad' : '');
-  document.getElementById('timecard-count').textContent = tc > 0 ? `×${tc}` : 'Ad';
+  document.getElementById('shuffle-count').textContent  = su > 0 ? `×${su}` : '⭐';
+  document.getElementById('undo-count').textContent     = uu > 0 ? `×${uu}` : (prevState ? '⭐' : '');
+  document.getElementById('timecard-count').textContent = tc > 0 ? `×${tc}` : '⭐';
   document.getElementById('btn-timecard').disabled = !timerId;
 }
 
@@ -1152,7 +1156,7 @@ function useTool(type) {
       saveToolInventory(toolsLeft);
       executeShuffle();
     } else {
-      showAdModal('shuffle'); // TODO: integrate real ad SDK
+      showPurchaseModal('shuffle'); // TODO: integrate real ad SDK
     }
   } else if (type === 'undo') {
     if (!prevState) return;
@@ -1161,7 +1165,7 @@ function useTool(type) {
       saveToolInventory(toolsLeft);
       applyUndo();
     } else {
-      showAdModal('undo'); // TODO: integrate real ad SDK
+      showPurchaseModal('undo'); // TODO: integrate real ad SDK
     }
   } else if (type === 'timecard') {
     if (!timerId) return; // game not running
@@ -1174,7 +1178,7 @@ function useTool(type) {
       updateToolsUI();
       playSound('undo'); // satisfying click sound
     } else {
-      showAdModal('timecard'); // TODO: integrate real ad SDK
+      showPurchaseModal('timecard'); // TODO: integrate real ad SDK
     }
   }
 }
@@ -1206,52 +1210,32 @@ function executeShuffle(free = false) {
   setTimeout(checkStuck, 400);
 }
 
-// ─── Ad Modal (TODO: replace stub with real ad SDK) ──────────────────────────
-function showAdModal(toolType) {
-  lockScroll();
-  stopTimer();
+// ─── Purchase Modal (Telegram Stars packs) ───────────────────────────────────
+function showPurchaseModal(toolType) {
+  if (gameOver) return;
   pendingStarsTool = toolType;
-  const info = TOOL_INFO[toolType];
-  // Reuse stars modal UI but change button label
-  document.getElementById('sm-icon').textContent         = info.icon;
-  document.getElementById('sm-title').textContent        = `Get a ${info.name}`;
-  document.getElementById('sm-desc').textContent         = info.desc + '\nWatch a short ad to earn one.';
-  document.getElementById('sm-stars-amount').textContent = '▶';
-  document.getElementById('sm-label').textContent        = 'Watch Ad';
-  const payBtn = document.getElementById('sm-pay-btn');
-  payBtn.textContent = 'Watch Ad ▶';
-  payBtn.onclick = () => {
-    // TODO: Call real ad SDK here (e.g. AdMob, Telegram Ad)
-    // For now: simulate instant reward
-    closeStarsModal();
-    grantTool(toolType);
-    showToast(t('toast_ad_granted'));
-    // Restore button for stars flow
-    payBtn.textContent = 'Pay with Stars ⭐';
-    payBtn.onclick = payWithStars;
-    document.getElementById('sm-label').textContent = 'Telegram Stars';
-  };
-  document.getElementById('stars-modal').classList.remove('hidden');
-}
+  stopTimer();
+  lockScroll();
 
-// ─── Stars Payment Modal ──────────────────────────────────────────────────────
-function showStarsModal(toolType) {
-  lockScroll();
-  stopTimer();
-  pendingStarsTool = toolType;
-  const info  = TOOL_INFO[toolType];
-  const stars = TOOL_STARS[toolType];
-  document.getElementById('sm-icon').textContent         = info.icon;
-  document.getElementById('sm-title').textContent        = `Get a ${info.name}`;
-  document.getElementById('sm-desc').textContent         = info.desc;
-  document.getElementById('sm-stars-amount').textContent = stars;
+  const info = TOOL_INFO[toolType];
+  document.getElementById('sm-icon').textContent  = info.icon;
+  document.getElementById('sm-title').textContent = t('pack_get', info.name);
+  document.getElementById('sm-desc').textContent  = info.desc;
+
+  document.getElementById('sm-packs').innerHTML = TOOL_PACKS.map(p => `
+    <button class="pack-btn${p.badge ? ' pack-best' : ''}"
+            onclick="buyPack('${toolType}', ${p.qty}, ${p.stars})">
+      <span class="pack-qty">${p.qty}×</span>
+      <span class="pack-stars">${p.stars} ⭐</span>
+      ${p.badge ? `<span class="pack-badge">${t('pack_best')}</span>` : ''}
+    </button>
+  `).join('');
+
   document.getElementById('stars-modal').classList.remove('hidden');
 }
 
 function closeStarsModal() {
-  const modal = document.getElementById('stars-modal');
-  if (!modal) return;
-  modal.classList.add('hidden');
+  document.getElementById('stars-modal').classList.add('hidden');
   unlockScroll();
   pendingStarsTool = null;
   // Resume timer if game is still active
@@ -1260,45 +1244,46 @@ function closeStarsModal() {
   }
 }
 
-function payWithStars() {
-  if (!pendingStarsTool) { closeStarsModal(); return; }
-  const toolType = pendingStarsTool;
-  const stars    = TOOL_STARS[toolType];
-  const info     = TOOL_INFO[toolType];
+async function buyPack(toolType, qty, stars) {
+  // Validate against known packs (prevent tampering)
+  const valid = TOOL_PACKS.some(p => p.qty === qty && p.stars === stars);
+  if (!valid) return;
 
-  // Telegram Stars invoice
-  if (window.Telegram?.WebApp?.openInvoice) {
-    // TODO: Replace with your actual invoice link from your bot backend
-    // The bot must create an invoice via Telegram Bot API and return a link.
-    // Example: window.Telegram.WebApp.openInvoice('https://t.me/invoice/...', callback)
-    const invoiceUrl = null; // Replace with real invoice URL from your bot
+  const info = TOOL_INFO[toolType];
 
-    if (invoiceUrl) {
-      window.Telegram.WebApp.openInvoice(invoiceUrl, status => {
-        if (status === 'paid') {
-          grantTool(toolType);
-        } else if (status === 'cancelled' || status === 'failed') {
-          closeStarsModal();
-          showToast(t('toast_pay_cancelled'));
-        }
-      });
-      return;
+  // Real Telegram Stars payment
+  if (API_READY && window.Telegram?.WebApp?.openInvoice) {
+    try {
+      const data = await apiPost('/api/invoice', { tool_type: toolType, qty, stars });
+      if (data?.url) {
+        window.Telegram.WebApp.openInvoice(data.url, status => {
+          if (status === 'paid') {
+            closeStarsModal();
+            grantTools(toolType, qty);
+          } else if (status === 'cancelled' || status === 'failed') {
+            closeStarsModal();
+            showToast(t('toast_pay_cancelled'));
+          }
+          // 'pending' — leave modal open
+        });
+        return;
+      }
+    } catch (e) {
+      console.error('Invoice error:', e);
     }
   }
 
-  // Fallback: simulate payment in dev/browser context
+  // Dev / browser fallback — grant immediately
   closeStarsModal();
-  showToast(`[Dev] ${info.icon} ${info.name} granted (${stars}⭐ — payment stub)`);
-  grantTool(toolType);
+  showToast(`[Dev] ${info.icon} ${qty}× ${info.name} granted (${stars}⭐ stub)`);
+  grantTools(toolType, qty);
 }
 
-function grantTool(toolType) {
-  toolsLeft[toolType] = (toolsLeft[toolType] || 0) + 1;
+function grantTools(toolType, qty) {
+  toolsLeft[toolType] = (toolsLeft[toolType] || 0) + qty;
   saveToolInventory(toolsLeft);
-  closeStarsModal();
   updateToolsUI();
-  const info = TOOL_INFO[toolType];
-  showToast(t('toast_tool_added', info.name));
+  showToast(t('toast_pack_granted', qty, TOOL_INFO[toolType].name));
 }
 
 // ─── Audio ────────────────────────────────────────────────────────────────────

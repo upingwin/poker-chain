@@ -165,23 +165,18 @@
     </div>
   </div>
 
-  <!-- ══ STARS PAYMENT MODAL ══ -->
+  <!-- ══ PURCHASE MODAL (Telegram Stars packs) ══ -->
   <div id="stars-modal" class="hidden">
     <div id="stars-box">
-      <div id="sm-icon"></div>
-      <div id="sm-title"></div>
-      <div id="sm-desc"></div>
-      <div id="sm-price">
-        <span id="sm-stars-amount"></span>
-        <span class="star-icon">⭐</span>
-        <span id="sm-label" data-i18n="stars_label">Telegram Stars</span>
+      <div id="sm-header">
+        <div id="sm-icon"></div>
+        <div id="sm-title"></div>
+        <div id="sm-desc"></div>
       </div>
-      <div id="sm-btns">
-        <button class="ov-btn primary" id="sm-pay-btn" onclick="payWithStars()" data-i18n="stars_pay">
-          Pay with Stars ⭐
-        </button>
-        <button class="ov-btn secondary" onclick="closeStarsModal()" data-i18n="btn_cancel">Cancel</button>
+      <div id="sm-packs">
+        <!-- pack buttons rendered by showPurchaseModal() -->
       </div>
+      <button class="ov-btn secondary" onclick="closeStarsModal()" data-i18n="btn_cancel">Cancel</button>
     </div>
   </div>
 
