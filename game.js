@@ -186,11 +186,16 @@ let pendingStarsTool = null;
 let activeChapter    = 1;
 
 // ─── Telegram Init ────────────────────────────────────────────────────────────
+// ─── Scroll lock (body) ───────────────────────────────────────────────────────
+function lockScroll()   { document.body.classList.add('modal-open'); }
+function unlockScroll() { document.body.classList.remove('modal-open'); }
+
 function initTelegram() {
   if (!window.Telegram?.WebApp) return;
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand();
+  tg.disableVerticalSwipes?.(); // prevent Telegram pull-to-close gesture
 
   // Apply Telegram theme colors via CSS variables
   const tp = tg.themeParams || {};
@@ -471,6 +476,7 @@ function starStr(n) {
 
 // ─── Start Level ──────────────────────────────────────────────────────────────
 function startLevel(id) {
+  unlockScroll();
   currentLevel      = LEVELS[id - 1];
   score         = 0;
   selectedCells = [];
@@ -1030,7 +1036,7 @@ document.addEventListener('touchmove', e => {
 document.addEventListener('touchend', () => endSelect());
 
 // ─── Overlay ──────────────────────────────────────────────────────────────────
-function hideOverlay() { document.getElementById('overlay').classList.add('hidden'); }
+function hideOverlay() { document.getElementById('overlay').classList.add('hidden'); unlockScroll(); }
 
 function showToast(msg) {
   const existing = document.getElementById('game-toast');
@@ -1043,6 +1049,7 @@ function showToast(msg) {
 }
 
 function showWin(finalScore, earned) {
+  lockScroll();
   playSound('win');
   // Reset rank badge (filled async when API responds)
   const rankEl = document.getElementById('win-rank');
@@ -1075,6 +1082,7 @@ function showWin(finalScore, earned) {
 }
 
 function showLose(finalScore, target) {
+  lockScroll();
   playSound('lose');
   document.getElementById('overlay-emoji').textContent = '⏱';
   document.getElementById('overlay-title').textContent = "Time's Up";
@@ -1190,6 +1198,7 @@ function executeShuffle(free = false) {
 
 // ─── Ad Modal (TODO: replace stub with real ad SDK) ──────────────────────────
 function showAdModal(toolType) {
+  lockScroll();
   stopTimer();
   pendingStarsTool = toolType;
   const info = TOOL_INFO[toolType];
@@ -1217,6 +1226,7 @@ function showAdModal(toolType) {
 
 // ─── Stars Payment Modal ──────────────────────────────────────────────────────
 function showStarsModal(toolType) {
+  lockScroll();
   stopTimer();
   pendingStarsTool = toolType;
   const info  = TOOL_INFO[toolType];
@@ -1232,6 +1242,7 @@ function closeStarsModal() {
   const modal = document.getElementById('stars-modal');
   if (!modal) return;
   modal.classList.add('hidden');
+  unlockScroll();
   pendingStarsTool = null;
   // Resume timer if game is still active
   if (!timerId && timeLeft > 0 && currentLevel && !gameOver) {
@@ -1346,6 +1357,7 @@ function jokerHTML(isBig) {
 
 // ─── Tutorial Popup (first-time, Level 1 only) ────────────────────────────────
 function showTutorialPopup() {
+  lockScroll();
   stopTimer();
   const modal = document.createElement('div');
   modal.id = 'tut-modal';
@@ -1399,6 +1411,7 @@ function closeTutorialPopup() {
   const p = loadProgress();
   p.tutorialSeen = true;
   saveProgress(p);
+  unlockScroll();
   if (!timerId && timeLeft > 0 && currentLevel && !gameOver) {
     timerId = setInterval(timerTick, 1000);
   }
@@ -1450,6 +1463,7 @@ function closeScoringTutorial() {
   const p = loadProgress();
   p.scoringTutSeen = true;
   saveProgress(p);
+  unlockScroll();
   if (!timerId && timeLeft > 0 && currentLevel && !gameOver) {
     timerId = setInterval(timerTick, 1000);
   }
@@ -1457,6 +1471,7 @@ function closeScoringTutorial() {
 
 // ─── Mastery Unlock Toast ─────────────────────────────────────────────────────
 function showMasteryUnlock(ch) {
+  lockScroll();
   const modal = document.createElement('div');
   modal.id = 'mastery-modal';
   modal.innerHTML = `
@@ -1467,10 +1482,15 @@ function showMasteryUnlock(ch) {
         Every <strong>${ch.symbol}</strong> in a chain now counts as
         <strong>+1 extra card</strong> — making your chains longer and your scores bigger.
       </div>
-      <button id="mastery-btn" onclick="this.closest('#mastery-modal').remove()">Awesome!</button>
+      <button id="mastery-btn" onclick="closeMasteryModal()">Awesome!</button>
     </div>
   `;
   document.body.appendChild(modal);
+}
+function closeMasteryModal() {
+  const modal = document.getElementById('mastery-modal');
+  if (modal) modal.remove();
+  unlockScroll();
 }
 
 // ─── Leaderboard Modal ────────────────────────────────────────────────────────
@@ -1542,6 +1562,7 @@ async function openGlobalLeaderboard() {
 }
 
 function showLeaderboardModal() {
+  lockScroll();
   document.getElementById('lb-modal').classList.remove('hidden');
   document.getElementById('lb-tab-level').classList.toggle('active', _lbCurrentTab === 'level');
   document.getElementById('lb-tab-global').classList.toggle('active', _lbCurrentTab === 'global');
@@ -1586,6 +1607,7 @@ function switchLbTab(tab) {
 
 function closeLeaderboard() {
   document.getElementById('lb-modal').classList.add('hidden');
+  unlockScroll();
 }
 
 // Close leaderboard on backdrop click
@@ -1600,10 +1622,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── Help / Game Guide ────────────────────────────────────────────────────────
 function openHelpGuide() {
+  lockScroll();
   document.getElementById('guide-modal').classList.remove('hidden');
 }
 function closeHelpGuide() {
   document.getElementById('guide-modal').classList.add('hidden');
+  unlockScroll();
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
