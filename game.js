@@ -1249,6 +1249,16 @@ async function buyPack(toolType, qty, stars) {
   const valid = TOOL_PACKS.some(p => p.qty === qty && p.stars === stars);
   if (!valid) return;
 
+  // Lock all pack buttons immediately to prevent double-tap
+  const btns = document.querySelectorAll('.pack-btn');
+  btns.forEach(b => { b.disabled = true; });
+  // Show spinner on the tapped button
+  const tapped = [...btns].find(b => b.querySelector('.pack-qty')?.textContent === `${qty}×`);
+  if (tapped) {
+    tapped.classList.add('pack-loading');
+    tapped.querySelector('.pack-stars').textContent = '…';
+  }
+
   const info = TOOL_INFO[toolType];
 
   // Real Telegram Stars payment
@@ -1264,7 +1274,7 @@ async function buyPack(toolType, qty, stars) {
             closeStarsModal();
             showToast(t('toast_pay_cancelled'));
           }
-          // 'pending' — leave modal open
+          // 'pending' — leave modal open, buttons stay locked until resolved
         });
         return;
       }

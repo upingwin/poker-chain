@@ -1147,6 +1147,18 @@ body.modal-open { overflow: hidden; }
   font-weight: 600;
   color: var(--ink-mid);
 }
+.pack-btn:disabled { opacity: 0.45; cursor: default; }
+.pack-btn.pack-loading {
+  opacity: 1;
+  border-color: var(--ink-dim);
+}
+.pack-btn.pack-loading .pack-qty { opacity: 0.5; }
+.pack-btn.pack-loading .pack-stars {
+  color: var(--ink-dim);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
 .pack-badge {
   position: absolute;
   top: -9px;
