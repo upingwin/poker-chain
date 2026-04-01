@@ -855,8 +855,7 @@ body.modal-open { overflow: hidden; }
   display: flex; align-items: center; justify-content: center;
 }
 
-/* card-back pseudo-elements setup */
-.card-back { position: relative; }
+/* card-back pseudo-elements setup (position:absolute already establishes containing block) */
 .card-back::before, .card-back::after {
   content: ''; position: absolute; pointer-events: none;
 }
