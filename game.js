@@ -444,6 +444,7 @@ function renderLevelGrid() {
   if (firstCurrent) setTimeout(() => firstCurrent.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 100);
 
   // Watermark poker card in the empty space below the grid
+  document.querySelector('.lgv-watermark')?.remove(); // clear previous chapter's watermark
   const suit  = CH_SUITS[ch.id - 1] || '★';
   const isRed = CH_RED_IDS.has(ch.id);
   const wm = document.createElement('div');
