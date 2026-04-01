@@ -443,12 +443,16 @@ function renderLevelGrid() {
   const firstCurrent = grid.querySelector('.current');
   if (firstCurrent) setTimeout(() => firstCurrent.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 100);
 
-  // Watermark card in the empty space below the grid
-  const suit   = CH_SUITS[ch.id - 1] || ch.symbol;
-  const isRed  = CH_RED_IDS.has(ch.id);
+  // Watermark poker card in the empty space below the grid
+  const suit  = CH_SUITS[ch.id - 1] || '★';
+  const isRed = CH_RED_IDS.has(ch.id);
   const wm = document.createElement('div');
   wm.className = 'lgv-watermark' + (isRed ? ' red' : '');
-  wm.innerHTML = `<span class="lgv-wm-rank">${ch.symbol}</span><span class="lgv-wm-suit">${suit}</span>`;
+  wm.innerHTML = `
+    <div class="wm-corner tl">${ch.symbol}<span>${suit}</span></div>
+    <div class="wm-center">${suit}</div>
+    <div class="wm-corner br">${ch.symbol}<span>${suit}</span></div>
+  `;
   document.getElementById('level-panel').appendChild(wm);
 
   // Load top-3 champion avatars async

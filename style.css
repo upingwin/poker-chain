@@ -277,7 +277,12 @@ body.modal-open { overflow: hidden; }
 .chc-lock-icon { font-size: clamp(14px, 3vw, 18px); opacity: 0.45; }
 
 /* ── Level grid sub-screen ── */
-#level-grid-view { width: 100%; }
+#level-grid-view {
+  width: 100%;
+  display: flex; flex-direction: column;
+  /* stretch to viewport so level-panel fills empty space below cards */
+  min-height: calc(100dvh - var(--sat) - 8px - var(--sab) - 24px - 50px);
+}
 #lgv-header {
   display: flex;
   align-items: center;
@@ -311,27 +316,41 @@ body.modal-open { overflow: hidden; }
   overflow: hidden;
   position: relative;
 }
-#level-grid { position: relative; z-index: 1; }
 #level-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 7px;
 }
-/* Level grid watermark card */
+/* Level grid watermark — poker card shape in empty space */
 .lgv-watermark {
   position: absolute;
-  bottom: -20px; right: -18px;
-  display: flex; flex-direction: column; align-items: center;
-  font-family: 'EB Garamond', Georgia, serif; font-weight: 700;
-  color: var(--ink); opacity: 0.075;
-  transform: rotate(-14deg);
-  transform-origin: right bottom;
+  bottom: 36px; right: 20px;
+  width: 100px; height: 140px;
+  background: var(--card);
+  border: 1.5px solid var(--border-md);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px oklch(17% 0.014 50 / 0.08);
+  opacity: 0.18;
+  transform: rotate(-10deg);
   pointer-events: none; user-select: none;
-  z-index: 0; line-height: 0.9;
+  z-index: 0;
+  font-family: 'EB Garamond', Georgia, serif; font-weight: 700;
+  color: var(--ink);
 }
 .lgv-watermark.red { color: var(--red); }
-.lgv-wm-rank { font-size: 130px; }
-.lgv-wm-suit { font-size: 82px; margin-top: -12px; }
+.wm-corner {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center;
+  line-height: 1.1; font-size: 15px;
+}
+.wm-corner.tl { top: 7px; left: 9px; }
+.wm-corner.br { bottom: 7px; right: 9px; transform: rotate(180deg); }
+.wm-corner span { font-size: 11px; }
+.wm-center {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 58px; line-height: 1;
+}
 
 /* Chapter header row — spans full grid width */
 .chapter-grid-header {
