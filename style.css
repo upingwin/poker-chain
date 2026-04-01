@@ -856,8 +856,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 1: Crimson Damask ── deep red, diamond lattice */
-.card.skin-1.face-down { background: oklch(28% 0.12 18); border-color: oklch(48% 0.18 18 / 0.6); }
-.card.skin-1 .card-back {
+.skin-1.face-down { background: oklch(28% 0.12 18); border-color: oklch(48% 0.18 18 / 0.6); }
+.skin-1 .card-back {
   border-color: oklch(60% 0.16 18 / 0.25);
   background-image:
     repeating-linear-gradient(45deg,  oklch(55% 0.20 18 / 0.18) 0, oklch(55% 0.20 18 / 0.18) 1px, transparent 1px, transparent 10px),
@@ -867,8 +867,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 2: Midnight Grid ── deep navy, fine geometric lines */
-.card.skin-2.face-down { background: oklch(18% 0.08 258); border-color: oklch(42% 0.14 258 / 0.6); }
-.card.skin-2 .card-back {
+.skin-2.face-down { background: oklch(18% 0.08 258); border-color: oklch(42% 0.14 258 / 0.6); }
+.skin-2 .card-back {
   border-color: oklch(55% 0.12 258 / 0.3);
   background-image:
     repeating-linear-gradient(0deg,  oklch(65% 0.15 258 / 0.14) 0, oklch(65% 0.15 258 / 0.14) 1px, transparent 1px, transparent 8px),
@@ -878,8 +878,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 3: Forest Plaid ── dark green, tartan crosshatch */
-.card.skin-3.face-down { background: oklch(22% 0.09 155); border-color: oklch(42% 0.14 155 / 0.6); }
-.card.skin-3 .card-back {
+.skin-3.face-down { background: oklch(22% 0.09 155); border-color: oklch(42% 0.14 155 / 0.6); }
+.skin-3 .card-back {
   border-color: oklch(58% 0.14 155 / 0.25);
   background-image:
     repeating-linear-gradient(0deg,  oklch(60% 0.18 155 / 0.22) 0, oklch(60% 0.18 155 / 0.22) 3px, transparent 3px, transparent 12px),
@@ -889,8 +889,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 4: Gold Arabesque ── near-black, gold interlocking curves */
-.card.skin-4.face-down { background: oklch(14% 0.012 55); border-color: oklch(68% 0.16 78 / 0.5); }
-.card.skin-4 .card-back {
+.skin-4.face-down { background: oklch(14% 0.012 55); border-color: oklch(68% 0.16 78 / 0.5); }
+.skin-4 .card-back {
   border-color: oklch(72% 0.18 78 / 0.4);
   background-image:
     repeating-linear-gradient(30deg,  oklch(72% 0.18 78 / 0.18) 0, oklch(72% 0.18 78 / 0.18) 1px, transparent 1px, transparent 9px),
@@ -899,8 +899,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 5: Sakura ── soft violet-pink, wave stripes */
-.card.skin-5.face-down { background: oklch(32% 0.08 330); border-color: oklch(68% 0.14 0 / 0.5); }
-.card.skin-5 .card-back {
+.skin-5.face-down { background: oklch(32% 0.08 330); border-color: oklch(68% 0.14 0 / 0.5); }
+.skin-5 .card-back {
   border-color: oklch(78% 0.14 0 / 0.3);
   background-image:
     repeating-linear-gradient(
@@ -913,8 +913,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 6: Cyber Glow ── near-black, glowing cyan circuit lines */
-.card.skin-6.face-down { background: oklch(11% 0.02 220); border-color: oklch(72% 0.20 200 / 0.5); }
-.card.skin-6 .card-back {
+.skin-6.face-down { background: oklch(11% 0.02 220); border-color: oklch(72% 0.20 200 / 0.5); }
+.skin-6 .card-back {
   border-color: oklch(72% 0.20 200 / 0.45);
   background-image:
     repeating-linear-gradient(0deg,  oklch(72% 0.22 200 / 0.16) 0, oklch(72% 0.22 200 / 0.16) 1px, transparent 1px, transparent 10px),
@@ -924,11 +924,11 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 7: Marble ── cool grey-white marble gradient swirls */
-.card.skin-7.face-down {
+.skin-7.face-down {
   background: linear-gradient(145deg, oklch(38% 0.008 230) 0%, oklch(30% 0.010 240) 50%, oklch(36% 0.006 220) 100%);
   border-color: oklch(58% 0.010 230 / 0.5);
 }
-.card.skin-7 .card-back {
+.skin-7 .card-back {
   border-color: oklch(72% 0.008 230 / 0.2);
   background-image:
     repeating-linear-gradient(112deg, oklch(62% 0.010 230 / 0.18) 0, oklch(62% 0.010 230 / 0.18) 2px, transparent 2px, transparent 18px),
@@ -937,8 +937,8 @@ body.modal-open { overflow: hidden; }
 }
 
 /* ── Skin 8: Sepia Vintage ── warm sepia, antique diamond border grid */
-.card.skin-8.face-down { background: oklch(26% 0.055 62); border-color: oklch(60% 0.10 72 / 0.5); }
-.card.skin-8 .card-back {
+.skin-8.face-down { background: oklch(26% 0.055 62); border-color: oklch(60% 0.10 72 / 0.5); }
+.skin-8 .card-back {
   border-color: oklch(70% 0.12 72 / 0.35);
   background-image:
     repeating-linear-gradient(45deg,  oklch(72% 0.13 72 / 0.20) 0, oklch(72% 0.13 72 / 0.20) 1px, transparent 1px, transparent 8px),
@@ -1350,6 +1350,7 @@ body.modal-open { overflow: hidden; }
   overflow: hidden;
   position: relative;
   border: 1.5px solid var(--border-md);
+  background: var(--back); /* default skin fallback */
   box-shadow: 0 2px 8px oklch(17% 0.014 50 / 0.10);
 }
 /* The mini card-back inside preview */
