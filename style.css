@@ -52,8 +52,8 @@ body {
   background: var(--bg);
   font-family: system-ui, -apple-system, 'Helvetica Neue', sans-serif;
   color: var(--ink);
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
+  height: 100dvh;
+  height: -webkit-fill-available;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -67,7 +67,6 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
   overflow: hidden;
-  height: 100%;
 }
 
 body.modal-open { overflow: hidden; }
@@ -83,6 +82,11 @@ body.modal-open { overflow: hidden; }
   display: flex;
   flex-direction: column;
   gap: 0;
+  /* Scroll within the fixed-height body */
+  max-height: calc(100dvh - var(--sat) - 8px - var(--sab) - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Select header ── */
@@ -305,12 +309,30 @@ body.modal-open { overflow: hidden; }
 #level-panel {
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
+#level-grid { position: relative; z-index: 1; }
 #level-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 7px;
 }
+/* Level grid watermark card */
+.lgv-watermark {
+  position: absolute;
+  bottom: -20px; right: -18px;
+  display: flex; flex-direction: column; align-items: center;
+  font-family: 'EB Garamond', Georgia, serif; font-weight: 700;
+  color: var(--ink); opacity: 0.075;
+  transform: rotate(-14deg);
+  transform-origin: right bottom;
+  pointer-events: none; user-select: none;
+  z-index: 0; line-height: 0.9;
+}
+.lgv-watermark.red { color: var(--red); }
+.lgv-wm-rank { font-size: 130px; }
+.lgv-wm-suit { font-size: 82px; margin-top: -12px; }
+
 /* Chapter header row — spans full grid width */
 .chapter-grid-header {
   grid-column: 1 / -1;

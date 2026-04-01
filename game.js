@@ -443,6 +443,14 @@ function renderLevelGrid() {
   const firstCurrent = grid.querySelector('.current');
   if (firstCurrent) setTimeout(() => firstCurrent.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 100);
 
+  // Watermark card in the empty space below the grid
+  const suit   = CH_SUITS[ch.id - 1] || ch.symbol;
+  const isRed  = CH_RED_IDS.has(ch.id);
+  const wm = document.createElement('div');
+  wm.className = 'lgv-watermark' + (isRed ? ' red' : '');
+  wm.innerHTML = `<span class="lgv-wm-rank">${ch.symbol}</span><span class="lgv-wm-suit">${suit}</span>`;
+  document.getElementById('level-panel').appendChild(wm);
+
   // Load top-3 champion avatars async
   if (API_READY) {
     fetchChampions(ch.from, ch.to).then(champions => {
