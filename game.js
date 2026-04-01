@@ -92,7 +92,7 @@ function generateLevels() {
 }
 const LEVELS = generateLevels();
 
-const STAR_THRESHOLDS = [1.0, 1.15, 1.3];
+const STAR_THRESHOLDS = [1.0, 1.5, 2.0];
 
 // New players get 3 of each tool (stored in localStorage, not per-level)
 function getInitialTools() {
@@ -161,7 +161,7 @@ const SUIT_SYMBOL = ['♠','♥','♦','♣'];
 const RED_SUITS   = new Set([1, 2]);
 const TIMER_CIRCUMFERENCE = 2 * Math.PI * 18; // ≈ 113.1
 const LEVEL_TIME_START    = 90;   // seconds at level start
-const MAX_TIME            = 90;   // time cap
+const MAX_TIME            = 180;  // time cap
 
 // Stars pricing per tool
 const TOOL_STARS = { shuffle: 5, undo: 3 };
@@ -872,22 +872,18 @@ function calculateScore(cells) {
   const len    = cells.length;              // actual chain length (for time bonus etc.)
   const effLen = len + powerBonus;          // effective length (for scoring)
 
-  const base = effLen <= 3 ? 100
-             : effLen === 4 ? 250
-             : effLen === 5 ? 500
-             : effLen === 6 ? 800
-             : 800 + (effLen - 6) * 200;
+  const base = 100 + (effLen - 3) * 200; // linear: 3→100, 4→300, 5→500, 6→700 …
 
   const suits    = new Set(nonJokers.map(c => c.suit));
   const rankSet  = new Set(nonJokers.map(c => c.rank));
   const straight = nonJokers.length >= 2 && checkStraight(nonJokers.map(c => c.rank));
 
   let mult = 1.0;
-  if (!hasJoker && suits.size === 1 && straight) mult = 2.0; // Royal Flush
-  else if (!hasJoker && rankSet.size === 1)       mult = 1.4; // Set
-  else if (!hasJoker && straight)                 mult = 1.3; // Straight
-  else if (!hasJoker && suits.size === 1)         mult = 1.2; // Flush
-  else if (hasJoker)                              mult = 1.1; // Wild
+  if (suits.size === 1 && straight)  mult = 2.0; // Royal Flush (Joker allowed)
+  else if (rankSet.size === 1)        mult = 1.4; // Set
+  else if (straight)                  mult = 1.3; // Straight
+  else if (suits.size === 1)          mult = 1.2; // Flush
+  if (hasJoker) mult = Math.round(mult * 1.1 * 100) / 100; // Joker stacks ×1.1
 
   return { points: Math.round(base * mult), mult, powerBonus, effLen };
 }
