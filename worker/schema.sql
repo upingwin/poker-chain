@@ -22,3 +22,10 @@ CREATE TABLE IF NOT EXISTS scores (
 CREATE INDEX IF NOT EXISTS idx_scores_level ON scores (level_id, score DESC);
 -- Fast lookup: all scores for a given user
 CREATE INDEX IF NOT EXISTS idx_scores_user  ON scores (user_id);
+
+CREATE TABLE IF NOT EXISTS skin_purchases (
+  user_id      INTEGER NOT NULL,
+  skin_id      INTEGER NOT NULL,
+  purchased_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  PRIMARY KEY (user_id, skin_id)
+);

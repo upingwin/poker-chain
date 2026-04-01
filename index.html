@@ -25,7 +25,7 @@
         <span id="player-name"></span>
       </div>
       <div id="select-header-right">
-        <div id="select-stars-badge" class="hidden">
+        <div id="select-stars-badge" class="hidden" onclick="openSkinShop()" style="cursor:pointer">
           <span id="stars-owned">0</span>
           <span class="star-icon">⭐</span>
         </div>
@@ -177,6 +177,23 @@
         <!-- pack buttons rendered by showPurchaseModal() -->
       </div>
       <button class="ov-btn secondary" onclick="closeStarsModal()" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ══ SKIN SHOP MODAL ══ -->
+  <div id="skin-modal" class="hidden">
+    <div id="skin-box">
+      <div id="skin-header">
+        <div id="skin-title" data-i18n="skin_shop_title">Card Skins</div>
+        <button id="skin-close" onclick="closeSkinShop()">✕</button>
+      </div>
+      <div id="skin-stars-bar">
+        <span data-i18n="skin_your_stars">Your stars</span>
+        <span id="skin-stars-count">—</span> <span class="star-icon">⭐</span>
+      </div>
+      <div id="skin-grid">
+        <!-- rendered by openSkinShop() -->
+      </div>
     </div>
   </div>
 

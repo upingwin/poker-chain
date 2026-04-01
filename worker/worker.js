@@ -264,6 +264,83 @@ async function handleCreateInvoice(request, env) {
   return json({ url: tgData.result });
 }
 
+// ─── GET /api/skins?user_id=X ─────────────────────────────────────────────────
+// Returns total stars earned + list of purchased skin IDs
+async function handleGetSkins(request, env) {
+  const url    = new URL(request.url);
+  const userId = parseInt(url.searchParams.get('user_id') || '0') || 0;
+  if (!userId) return json({ total_stars: 0, purchased: [] });
+
+  const [starsRow, purchasedRows] = await Promise.all([
+    env.DB.prepare(`SELECT SUM(stars) as total FROM scores WHERE user_id = ?`).bind(userId).first(),
+    env.DB.prepare(`SELECT skin_id FROM skin_purchases WHERE user_id = ?`).bind(userId).all(),
+  ]);
+
+  return json({
+    total_stars: starsRow?.total || 0,
+    purchased:   purchasedRows.results.map(r => r.skin_id),
+  });
+}
+
+// ─── POST /api/skin/buy ───────────────────────────────────────────────────────
+// Body: { skin_id: 1..8 }
+// Returns: { url } — invoice link
+const SKIN_STARS_PRICE = 50; // Telegram Stars per skin
+const SKIN_NAMES = [
+  '', // 0 = default, not purchasable
+  'Crimson Damask',
+  'Midnight Grid',
+  'Forest Plaid',
+  'Gold Arabesque',
+  'Sakura',
+  'Cyber Glow',
+  'Marble',
+  'Sepia Vintage',
+];
+
+async function handleBuySkin(request, env) {
+  const user = await getAuthUser(request, env);
+  if (!user) return json({ error: 'Unauthorized' }, 401);
+
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ error: 'Bad JSON' }, 400); }
+
+  const { skin_id } = body;
+  if (!Number.isInteger(skin_id) || skin_id < 1 || skin_id > 8)
+    return json({ error: 'Invalid skin_id' }, 400);
+
+  // Check if already owned
+  const owned = await env.DB.prepare(
+    `SELECT 1 FROM skin_purchases WHERE user_id = ? AND skin_id = ?`
+  ).bind(user.id, skin_id).first();
+  if (owned) return json({ error: 'Already owned' }, 400);
+
+  const skinName = SKIN_NAMES[skin_id];
+  const payload  = `skin:${skin_id}:${user.id}`;
+
+  const tgResp = await fetch(
+    `https://api.telegram.org/bot${env.BOT_TOKEN}/createInvoiceLink`,
+    {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        title:       `${skinName} Skin`,
+        description: `Unlock the ${skinName} card back skin for Poker Chain`,
+        payload,
+        currency:    'XTR',
+        prices:      [{ label: skinName, amount: SKIN_STARS_PRICE }],
+      }),
+    }
+  );
+  const tgData = await tgResp.json();
+  if (!tgData.ok) {
+    console.error('skin createInvoiceLink failed:', tgData);
+    return json({ error: tgData.description || 'Failed to create invoice' }, 500);
+  }
+  return json({ url: tgData.result });
+}
+
 // ─── POST /webhook ────────────────────────────────────────────────────────────
 // Telegram bot webhook — answers pre_checkout_query so Stars payments complete
 async function handleWebhook(request, env) {
@@ -281,7 +358,19 @@ async function handleWebhook(request, env) {
       }),
     });
   }
-  // successful_payment — could record purchase here for audit
+  if (body.successful_payment) {
+    const payload = body.successful_payment.invoice_payload || '';
+    // skin:<skin_id>:<user_id>
+    const skinMatch = payload.match(/^skin:(\d+):(\d+)$/);
+    if (skinMatch) {
+      const skinId = parseInt(skinMatch[1]);
+      const userId = parseInt(skinMatch[2]);
+      await env.DB.prepare(`
+        INSERT OR IGNORE INTO skin_purchases (user_id, skin_id, purchased_at)
+        VALUES (?, ?, unixepoch())
+      `).bind(userId, skinId).run();
+    }
+  }
   return new Response('ok');
 }
 
@@ -317,6 +406,12 @@ export default {
       }
       if (request.method === 'GET' && path === '/api/global') {
         return handleGlobal(request, env);
+      }
+      if (request.method === 'GET' && path === '/api/skins') {
+        return handleGetSkins(request, env);
+      }
+      if (request.method === 'POST' && path === '/api/skin/buy') {
+        return handleBuySkin(request, env);
       }
 
       return json({ error: 'Not found' }, 404);

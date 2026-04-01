@@ -741,10 +741,9 @@ function renderBoard(flipSet = new Set()) {
         if (flipSet.has(key)) el.classList.add('flip-in');
       } else if (!card.faceUp) {
         el.classList.add('face-down');
-        const suitHint = card.suit >= 0
-          ? `<span class="back-suit ${RED_SUITS.has(card.suit) ? 'red' : ''}">${SUIT_SYMBOL[card.suit]}</span>`
-          : '';
-        el.innerHTML = `<div class="card-back">${suitHint}</div>`;
+        const skinCls = getActiveSkinClass();
+        if (skinCls) el.classList.add(skinCls);
+        el.innerHTML = `<div class="card-back"></div>`;
         if (flipSet.has(key)) el.classList.add('flip-in');
       } else {
         const isRed = RED_SUITS.has(card.suit);
@@ -1612,13 +1611,174 @@ function closeLeaderboard() {
   unlockScroll();
 }
 
-// Close leaderboard on backdrop click
+// ─── Skin Shop ────────────────────────────────────────────────────────────────
+const SKINS = [
+  { id: 0, nameKey: 'skin_0', cls: ''       }, // default
+  { id: 1, nameKey: 'skin_1', cls: 'skin-1' },
+  { id: 2, nameKey: 'skin_2', cls: 'skin-2' },
+  { id: 3, nameKey: 'skin_3', cls: 'skin-3' },
+  { id: 4, nameKey: 'skin_4', cls: 'skin-4' },
+  { id: 5, nameKey: 'skin_5', cls: 'skin-5' },
+  { id: 6, nameKey: 'skin_6', cls: 'skin-6' },
+  { id: 7, nameKey: 'skin_7', cls: 'skin-7' },
+  { id: 8, nameKey: 'skin_8', cls: 'skin-8' },
+];
+const SKIN_STAR_COST  = 30;  // in-game stars threshold per skin slot
+const SKIN_TG_PRICE   = 50;  // Telegram Stars to buy directly
+
+let _skinTotalStars  = 0;    // fetched from backend
+let _skinPurchased   = [];   // skin IDs purchased via TG Stars
+let _skinActive      = parseInt(localStorage.getItem('activeSkin') || '0');
+
+function getActiveSkinClass() {
+  return SKINS[_skinActive]?.cls || '';
+}
+
+function setActiveSkin(id) {
+  _skinActive = id;
+  localStorage.setItem('activeSkin', id);
+}
+
+// How many skins are threshold-unlocked (based on stars earned)?
+function skinThresholdUnlocked(totalStars) {
+  return Math.floor(totalStars / SKIN_STAR_COST); // skins 1..N unlocked
+}
+
+async function openSkinShop() {
+  lockScroll();
+  document.getElementById('skin-modal').classList.remove('hidden');
+  document.getElementById('skin-stars-count').textContent = '…';
+  document.getElementById('skin-grid').innerHTML = '';
+
+  // Fetch from backend
+  const user = getTgUser();
+  if (API_READY && user) {
+    const data = await apiGet(`/api/skins?user_id=${user.id}`);
+    if (data) {
+      _skinTotalStars = data.total_stars || 0;
+      _skinPurchased  = data.purchased   || [];
+    }
+  } else {
+    // Fallback: count stars from local progress
+    const allStars = loadProgress().stars || {};
+    _skinTotalStars = Object.values(allStars).reduce((s, v) => s + v, 0);
+  }
+
+  document.getElementById('skin-stars-count').textContent = _skinTotalStars;
+  renderSkinGrid();
+}
+
+function closeSkinShop() {
+  document.getElementById('skin-modal').classList.add('hidden');
+  unlockScroll();
+}
+
+function renderSkinGrid() {
+  const grid = document.getElementById('skin-grid');
+  const thresholdCount = skinThresholdUnlocked(_skinTotalStars);
+
+  grid.innerHTML = SKINS.map(skin => {
+    const isDefault   = skin.id === 0;
+    const isActive    = skin.id === _skinActive;
+    const isPurchased = _skinPurchased.includes(skin.id);
+    const isThreshold = skin.id <= thresholdCount;
+    const isUnlocked  = isDefault || isPurchased || isThreshold;
+    const name        = t(skin.nameKey);
+
+    let btnHTML;
+    if (isActive) {
+      btnHTML = `<button class="skin-btn equipped" disabled>${t('skin_equipped')}</button>`;
+    } else if (isUnlocked) {
+      btnHTML = `<button class="skin-btn equip" onclick="equipSkin(${skin.id})">${t('skin_equip')}</button>`;
+    } else if (!isPurchased) {
+      // Show both options: unlock via stars or buy
+      const canUnlock = _skinTotalStars >= skin.id * SKIN_STAR_COST;
+      if (canUnlock) {
+        btnHTML = `<button class="skin-btn unlock" onclick="unlockSkinByStars(${skin.id})">${t('skin_unlock_stars', SKIN_STAR_COST)}</button>`;
+      } else {
+        btnHTML = `
+          <button class="skin-btn buy" onclick="buySkin(${skin.id})" id="skin-buy-${skin.id}">${t('skin_buy_tg', SKIN_TG_PRICE)}</button>`;
+      }
+    }
+
+    // Build preview: replicate card-back CSS using skin class on a mini element
+    const previewBg = skin.cls
+      ? `class="skin-preview ${isActive ? 'active-skin' : ''}" data-skin="${skin.cls}"`
+      : `class="skin-preview ${isActive ? 'active-skin' : ''}"`;
+
+    return `
+      <div class="skin-item">
+        <div ${previewBg}>
+          <div class="card-back skin-preview-inner"></div>
+          ${isActive ? `<div class="skin-active-badge">${t('skin_on')}</div>` : ''}
+          ${!isUnlocked && !isPurchased ? `<div class="skin-lock-overlay">🔒</div>` : ''}
+        </div>
+        <div class="skin-name">${name}</div>
+        ${btnHTML}
+      </div>`;
+  }).join('');
+
+  // Apply skin CSS classes to preview elements
+  grid.querySelectorAll('.skin-preview[data-skin]').forEach(el => {
+    el.classList.add(el.dataset.skin, 'face-down');
+  });
+}
+
+function equipSkin(id) {
+  setActiveSkin(id);
+  renderSkinGrid();
+  // Re-render board if game is active
+  if (document.getElementById('screen-game') && !document.getElementById('screen-game').classList.contains('hidden')) {
+    renderBoard(new Set(), new Set());
+  }
+}
+
+async function unlockSkinByStars(skinId) {
+  // Stars threshold unlock — just equip it (threshold already verified)
+  equipSkin(skinId);
+}
+
+async function buySkin(skinId) {
+  const btn = document.getElementById(`skin-buy-${skinId}`);
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+
+  const user = getTgUser();
+  if (!user || !API_READY) {
+    // Dev fallback
+    _skinPurchased.push(skinId);
+    equipSkin(skinId);
+    return;
+  }
+
+  const data = await apiPost('/api/skin/buy', { skin_id: skinId });
+  if (!data?.url) {
+    if (btn) { btn.disabled = false; btn.textContent = t('skin_buy_tg', SKIN_TG_PRICE); }
+    return;
+  }
+
+  const WebApp = window.Telegram?.WebApp;
+  if (WebApp?.openInvoice) {
+    WebApp.openInvoice(data.url, status => {
+      if (status === 'paid') {
+        _skinPurchased.push(skinId);
+        equipSkin(skinId);
+      } else {
+        renderSkinGrid();
+      }
+    });
+  }
+}
+
+// Close skin modal on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lb-modal')?.addEventListener('click', e => {
     if (e.target === document.getElementById('lb-modal')) closeLeaderboard();
   });
   document.getElementById('guide-modal')?.addEventListener('click', e => {
     if (e.target === document.getElementById('guide-modal')) closeHelpGuide();
+  });
+  document.getElementById('skin-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('skin-modal')) closeSkinShop();
   });
 });
 
