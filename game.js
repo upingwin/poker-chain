@@ -1337,11 +1337,10 @@ function jokerHTML(isBig) {
     <circle cx="20" cy="31.5" r="1.8" fill="${isBig?'#e74c3c':'#888'}"/>
     <path d="M15.5 35 Q20 38.5 24.5 35" stroke="${isBig?'#c0392b':'#555'}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
   </svg>`;
-  const label = isBig ? 'BIG' : 'SML';
   return `
-    <div class="joker-corner tl"><span class="jc-rank">★</span><span class="jc-suit">${label}</span></div>
+    <div class="joker-corner tl"><span class="jc-rank">J</span><span class="jc-suit">★</span></div>
     <div class="joker-art">${svg}</div>
-    <div class="joker-corner br"><span class="jc-rank">★</span><span class="jc-suit">${label}</span></div>
+    <div class="joker-corner br"><span class="jc-rank">J</span><span class="jc-suit">★</span></div>
   `;
 }
 

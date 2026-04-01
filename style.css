@@ -809,15 +809,16 @@ body {
 /* Empty */
 .card.empty { background: oklch(88% 0.022 78 / 0.4); border: 1px dashed var(--border); box-shadow: none; }
 
-/* Power card — mastered rank, golden border */
+/* Power card — mastered rank, light-gold face */
 .card.power-card {
-  border-color: oklch(72% 0.14 82) !important;
-  box-shadow: 0 0 0 1.5px oklch(72% 0.14 82), 0 0 8px oklch(72% 0.14 82 / 0.35) !important;
+  background: linear-gradient(150deg, oklch(98% 0.030 82) 0%, oklch(95% 0.058 72) 100%) !important;
+  border-color: var(--border-md) !important;
+  box-shadow: 0 1px 5px oklch(17% 0.014 50 / 0.08) !important;
 }
 .card.power-card::after {
   content: '✦';
   position: absolute; top: 2px; right: 4px;
-  font-size: 7px; color: oklch(62% 0.14 80);
+  font-size: 7px; color: oklch(60% 0.13 78);
   line-height: 1; pointer-events: none;
 }
 
