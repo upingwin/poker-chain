@@ -8,18 +8,18 @@ html { overscroll-behavior: none; height: 100%; }
 
 :root {
   /* ── Palette (OKLCH) ── */
-  --bg:        oklch(95.5% 0.016 80);
-  --surface:   oklch(91%   0.020 78);
-  --card:      oklch(99%   0.004 80);
-  --back:      oklch(16%   0.012 50);
-  --ink:       oklch(17%   0.014 50);
-  --ink-mid:   oklch(48%   0.016 60);
+  --bg:        oklch(93%   0.018 78);
+  --surface:   oklch(89%   0.022 76);
+  --card:      oklch(97%   0.014 76);
+  --back:      oklch(22%   0.015 50);
+  --ink:       oklch(22%   0.014 50);
+  --ink-mid:   oklch(50%   0.016 60);
   --ink-dim:   oklch(68%   0.014 65);
-  --red:       oklch(44%   0.220 25);
-  --green:     oklch(52%   0.15  145);
+  --red:       oklch(47%   0.178 25);
+  --green:     oklch(50%   0.13  145);
   --amber:     oklch(64%   0.130 72);
-  --border:    oklch(17%   0.014 50 / 0.09);
-  --border-md: oklch(17%   0.014 50 / 0.16);
+  --border:    oklch(17%   0.014 50 / 0.08);
+  --border-md: oklch(17%   0.014 50 / 0.13);
 
   /* ── Sizing (responsive card) ── */
   --gap: 5px;
@@ -41,11 +41,11 @@ html { overscroll-behavior: none; height: 100%; }
 
 /* Apply Telegram theme colors when available */
 body.tg-theme {
-  --bg:      var(--tg-theme-bg-color,          oklch(95.5% 0.016 80));
-  --card:    var(--tg-theme-secondary-bg-color, oklch(99% 0.004 80));
-  --ink:     var(--tg-theme-text-color,         oklch(17%  0.014 50));
-  --ink-mid: var(--tg-theme-hint-color,         oklch(48%  0.016 60));
-  --red:     var(--tg-theme-button-color,       oklch(44%  0.220 25));
+  --bg:      var(--tg-theme-bg-color,          oklch(93%   0.018 78));
+  --card:    var(--tg-theme-secondary-bg-color, oklch(97%  0.014 76));
+  --ink:     var(--tg-theme-text-color,         oklch(22%  0.014 50));
+  --ink-mid: var(--tg-theme-hint-color,         oklch(50%  0.016 60));
+  --red:     var(--tg-theme-button-color,       oklch(47%  0.178 25));
 }
 
 body {
@@ -186,7 +186,7 @@ body.modal-open { overflow: hidden; }
 .ch-card.unlocked {
   background: var(--card);
   border: 1px solid var(--border-md);
-  box-shadow: 0 2px 8px oklch(17% 0.014 50 / 0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+  box-shadow: 0 2px 8px oklch(17% 0.014 50 / 0.08), inset 0 1px 0 rgba(255,255,255,0.4);
   cursor: pointer;
 }
 .ch-card.unlocked:active { transform: scale(0.94); }
@@ -737,12 +737,12 @@ body.modal-open { overflow: hidden; }
 }
 /* Last 30s urgency — red border pulse */
 #board-container.urgency {
-  border-color: oklch(44% 0.220 25 / 0.5);
-  animation: urgencyPulse 1s ease-in-out infinite;
+  border-color: oklch(47% 0.178 25 / 0.45);
+  animation: urgencyPulse 1.5s ease-in-out infinite;
 }
 @keyframes urgencyPulse {
-  0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 0 0 0 oklch(44% 0.220 25 / 0); }
-  50%       { box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 0 0 6px oklch(44% 0.220 25 / 0.18); }
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 0 0 oklch(47% 0.178 25 / 0); }
+  50%       { box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 0 4px oklch(47% 0.178 25 / 0.12); }
 }
 
 #board {
@@ -783,7 +783,7 @@ body.modal-open { overflow: hidden; }
 .card.face-up {
   background: var(--card);
   border: 1px solid var(--border-md);
-  box-shadow: 0 1px 3px oklch(17% 0.014 50 / 0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+  box-shadow: 0 1px 3px oklch(17% 0.014 50 / 0.08), inset 0 1px 0 rgba(255,255,255,0.4);
   cursor: pointer;
   transition: transform 0.15s var(--spring), box-shadow 0.15s;
 }
@@ -806,12 +806,12 @@ body.modal-open { overflow: hidden; }
 
 /* Hint highlight — valid next card during drag */
 .card.hint-next {
-  box-shadow: 0 0 0 2px var(--green), 0 0 8px oklch(52% 0.15 145 / 0.4) !important;
-  animation: hintPulse 0.9s ease infinite alternate;
+  box-shadow: 0 0 0 2px var(--green), 0 0 5px oklch(50% 0.13 145 / 0.25) !important;
+  animation: hintPulse 1.6s ease infinite alternate;
 }
 @keyframes hintPulse {
-  from { box-shadow: 0 0 0 1.5px var(--green), 0 0 4px oklch(52% 0.15 145 / 0.3); }
-  to   { box-shadow: 0 0 0 2.5px var(--green), 0 0 12px oklch(52% 0.15 145 / 0.5); }
+  from { box-shadow: 0 0 0 1.5px var(--green), 0 0 3px oklch(50% 0.13 145 / 0.15); }
+  to   { box-shadow: 0 0 0 2px var(--green),   0 0 7px oklch(50% 0.13 145 / 0.28); }
 }
 
 
@@ -820,12 +820,12 @@ body.modal-open { overflow: hidden; }
 .card.joker-big {
   background: linear-gradient(155deg, oklch(99% 0.008 75) 0%, oklch(96% 0.04 60) 100%) !important;
   border-color: oklch(52% 0.19 30) !important;
-  box-shadow: 0 1px 6px oklch(52% 0.19 30 / 0.2), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  box-shadow: 0 1px 6px oklch(52% 0.19 30 / 0.2), inset 0 1px 0 rgba(255,255,255,0.4) !important;
 }
 .card.joker-small {
   background: linear-gradient(155deg, oklch(99% 0.004 80) 0%, oklch(94% 0.008 70) 100%) !important;
   border-color: oklch(32% 0.010 50) !important;
-  box-shadow: 0 1px 5px oklch(17% 0.014 50 / 0.16), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  box-shadow: 0 1px 5px oklch(17% 0.014 50 / 0.16), inset 0 1px 0 rgba(255,255,255,0.4) !important;
 }
 .joker-corner {
   position: absolute; line-height: 1;
@@ -835,15 +835,15 @@ body.modal-open { overflow: hidden; }
 .joker-corner.br { bottom: 3px; right: 5px; transform: rotate(180deg); }
 .joker-corner .jc-rank { font-size: 11px; display: block; }
 .joker-corner .jc-suit { font-size: 8px; display: block; letter-spacing: 0.3px; margin-top: 1px; opacity: 0.8; }
-.joker-big   .joker-corner { color: oklch(44% 0.220 25); }
+.joker-big   .joker-corner { color: oklch(47% 0.178 25); }
 .joker-small .joker-corner { color: oklch(20% 0.010 50); }
 .joker-art { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -46%); width: 68%; height: 70%; }
 
 /* Face down */
 .card.face-down {
   background: var(--back);
-  border: 1px solid oklch(17% 0.014 50 / 0.5);
-  box-shadow: 0 1px 3px oklch(17% 0.014 50 / 0.2);
+  border: 1px solid oklch(17% 0.014 50 / 0.4);
+  box-shadow: 0 1px 3px oklch(17% 0.014 50 / 0.14);
   overflow: hidden;
 }
 .card-back {
