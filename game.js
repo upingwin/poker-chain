@@ -160,7 +160,7 @@ const RANK_LABEL  = ['','A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 const SUIT_SYMBOL = ['♠','♥','♦','♣'];
 const RED_SUITS   = new Set([1, 2]);
 const TIMER_CIRCUMFERENCE = 2 * Math.PI * 18; // ≈ 113.1
-const LEVEL_TIME_START    = 90;   // seconds at level start
+const LEVEL_TIME_START    = 120;  // seconds at level start
 const MAX_TIME            = 180;  // time cap
 
 // Tool packs — unified across all tool types
@@ -898,8 +898,9 @@ function eliminateCells(cells) {
   const { points: gained, mult, powerBonus } = calculateScore(cells);
   score += gained;
 
-  // Time bonus: chain length in seconds (3 cards = +3s, 8 cards = +8s), cap at MAX_TIME
-  const timeBonus  = cells.length;
+  // Time bonus: +1s per card; if chain > 3, extra +(len-3)s  e.g. len=5→+7s, len=8→+13s
+  const len        = cells.length;
+  const timeBonus  = len > 3 ? len + (len - 3) : len;
   const prevTime   = timeLeft;
   timeLeft = Math.min(timeLeft + timeBonus, MAX_TIME);
   const actualAdded = timeLeft - prevTime;
