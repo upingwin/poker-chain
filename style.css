@@ -654,6 +654,25 @@ body.modal-open { overflow: hidden; }
   color: var(--ink-mid); letter-spacing: 0.5px;
   text-transform: uppercase; white-space: nowrap;
 }
+/* Diagonal mini-grid demo (3×3 board snippet) */
+.tut-mini-grid {
+  display: grid; grid-template-columns: repeat(3, 28px); gap: 2px;
+}
+.tut-mini-card {
+  width: 28px; height: 38px; border-radius: 4px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 12px; font-weight: 700; line-height: 1.1;
+}
+.tut-mini-card.dim {
+  background: var(--surface); border: 1px dashed var(--border); opacity: 0.35;
+}
+.tut-mini-card.lit {
+  background: var(--card); border: 1px solid var(--border-md);
+  box-shadow: 0 1px 3px oklch(17% 0.014 50 / 0.12);
+}
+.tut-mini-card span { font-size: 10px; }
 #tut-btn {
   width: 100%; padding: 13px;
   background: var(--ink); color: var(--bg);

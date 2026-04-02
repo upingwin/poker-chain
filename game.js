@@ -1403,6 +1403,20 @@ function showTutorialPopup() {
           </div>
           <div class="tut-label">${t('tut_consecutive')}</div>
         </div>
+        <div class="tut-row" style="--d:1.35s">
+          <div class="tut-mini-grid">
+            <div class="tut-mini-card dim"></div>
+            <div class="tut-mini-card dim"></div>
+            <div class="tut-mini-card lit red">7<span>♥</span></div>
+            <div class="tut-mini-card dim"></div>
+            <div class="tut-mini-card lit black">8<span>♠</span></div>
+            <div class="tut-mini-card dim"></div>
+            <div class="tut-mini-card lit red">9<span>♦</span></div>
+            <div class="tut-mini-card dim"></div>
+            <div class="tut-mini-card dim"></div>
+          </div>
+          <div class="tut-label">${t('tut_diagonal')}</div>
+        </div>
       </div>
       <button id="tut-btn" onclick="closeTutorialPopup()">${t('tut_got_it')}</button>
     </div>
