@@ -160,7 +160,8 @@ const RANK_LABEL  = ['','A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 const SUIT_SYMBOL = ['♠','♥','♦','♣'];
 const RED_SUITS   = new Set([1, 2]);
 const TIMER_CIRCUMFERENCE = 2 * Math.PI * 18; // ≈ 113.1
-const LEVEL_TIME_START    = 120;  // seconds at level start
+const LEVEL_TIME_BASE     = 90;   // chapter-1 start time (seconds)
+const LEVEL_TIME_STEP     = 10;   // +10s per chapter
 const MAX_TIME            = 180;  // time cap
 
 // Tool packs — unified across all tool types
@@ -562,7 +563,8 @@ function goBack() {
 // ─── Timer ────────────────────────────────────────────────────────────────────
 function startTimer() {
   stopTimer();
-  timeLeft = LEVEL_TIME_START;
+  const chapterIdx = (currentLevel?.chapter ?? 1) - 1; // 0-based
+  timeLeft = Math.min(LEVEL_TIME_BASE + chapterIdx * LEVEL_TIME_STEP, MAX_TIME);
   renderTimer();
   timerId = setInterval(timerTick, 1000);
 }
