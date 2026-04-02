@@ -608,28 +608,44 @@ body.modal-open { overflow: hidden; }
 /* Tutorial animated board */
 #tut-anim-wrap { margin: 14px 0 18px; }
 #tut-anim-board {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
-  --tam-sel: oklch(54% 0.22 14);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
 }
 .tam-card {
-  aspect-ratio: 3/4;
+  aspect-ratio: 10/13;
   background: var(--card); border: 1px solid var(--border-md); border-radius: 6px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-family: 'EB Garamond', Georgia, serif; font-size: 15px; font-weight: 700; line-height: 1.1;
+  box-shadow: 0 1px 3px oklch(17% 0.014 50 / 0.08), inset 0 1px 0 rgba(255,255,255,0.4);
   position: relative;
-  transition: background 0.38s ease, color 0.38s ease, opacity 0.38s ease,
-              box-shadow 0.38s ease, transform 0.38s ease, border-color 0.38s ease;
+  transition: opacity 0.38s ease, transform 0.38s ease, box-shadow 0.38s ease;
 }
-.tam-card span { font-size: 11px; }
 .tam-card.red   { color: var(--red); }
 .tam-card.black { color: var(--ink); }
+/* Corner labels — mirrors .card-tl / .card-br */
+.tam-tl {
+  position: absolute; top: 3px; left: 5px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 14px; font-weight: 700; line-height: 1;
+}
+.tam-tl span { font-size: 11px; display: block; }
+.tam-br {
+  position: absolute; bottom: 3px; right: 5px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 14px; font-weight: 700; line-height: 1;
+  transform: rotate(180deg);
+}
+.tam-br span { font-size: 11px; display: block; }
+/* Centre suit — mirrors .card-center */
+.tam-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px; line-height: 1;
+}
+/* Highlighted: normal card look, just lifted; others dimmed */
 .tam-card.tam-sel {
-  background: var(--tam-sel); color: white; border-color: transparent;
-  box-shadow: 0 0 0 2px var(--tam-sel), 0 3px 12px oklch(0% 0 0 / 0.28);
+  box-shadow: 0 0 0 2px var(--ink), 0 4px 12px oklch(17% 0.014 50 / 0.22),
+              inset 0 1px 0 rgba(255,255,255,0.4);
   transform: scale(1.07); z-index: 1;
 }
-.tam-card.tam-sel span { color: rgba(255,255,255,0.85); }
-.tam-card.tam-dim { opacity: 0.18; transform: scale(0.96); }
+.tam-card.tam-dim { opacity: 0.15; }
 #tut-anim-bar {
   display: flex; align-items: center; justify-content: space-between;
   margin-top: 10px; padding: 0 2px;

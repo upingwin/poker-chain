@@ -1363,28 +1363,22 @@ function jokerHTML(isBig) {
 }
 
 // ─── Tutorial Animation Board ─────────────────────────────────────────────────
-// 4×4 fixed board; indices: row*4+col
+// 3×3 fixed board; indices: row*3+col
 const TAM_CARDS = [
   // Row 0
-  { r: 'K',  s: '♠', red: false }, { r: 'A',  s: '♣', red: false },
-  { r: '9',  s: '♣', red: false }, { r: '10', s: '♠', red: false },
+  { r: 'K',  s: '♠', red: false }, { r: '9',  s: '♣', red: false }, { r: '10', s: '♠', red: false },
   // Row 1
-  { r: '2',  s: '♦', red: true  }, { r: 'K',  s: '♦', red: true  },
-  { r: 'Q',  s: '♠', red: false }, { r: 'J',  s: '♦', red: true  },
+  { r: '3',  s: '♥', red: true  }, { r: 'K',  s: '♥', red: true  }, { r: 'J',  s: '♥', red: true  },
   // Row 2
-  { r: '3',  s: '♥', red: true  }, { r: '8',  s: '♥', red: true  },
-  { r: 'K',  s: '♥', red: true  }, { r: '5',  s: '♠', red: false },
-  // Row 3
-  { r: '6',  s: '♦', red: true  }, { r: '7',  s: '♣', red: false },
-  { r: '4',  s: '♦', red: true  }, { r: 'K',  s: '♣', red: false },
+  { r: '7',  s: '♦', red: true  }, { r: 'Q',  s: '♠', red: false }, { r: 'K',  s: '♣', red: false },
 ];
-// Scene 1: 3♥ 8♥ K♥ — same suit, horizontal row 2
-// Scene 2: 9♣(0,2)→10♠(0,3)→J♦(1,3) — consecutive, L-shape (right then down)
-// Scene 3: K♠(0,0)→K♦(1,1)→K♥(2,2)→K♣(3,3) — same rank, diagonal
+// Scene 1: 3♥ K♥ J♥ (idx 3,4,5) — same suit ♥, horizontal
+// Scene 2: 9♣(0,1)→10♠(0,2)→J♥(1,2) (idx 1,2,5) — consecutive, L-shape
+// Scene 3: K♠(0,0)→K♥(1,1)→K♣(2,2) (idx 0,4,8) — same rank, diagonal
 const TAM_SCENES = [
-  { sel: new Set([8, 9, 10]),     labelKey: 'tut_same_suit',   color: 'oklch(54% 0.22 14)'  },
-  { sel: new Set([2, 3, 7]),      labelKey: 'tut_consecutive', color: 'oklch(52% 0.18 220)' },
-  { sel: new Set([0, 5, 10, 15]), labelKey: 'tut_same_rank',   color: 'oklch(60% 0.18 75)'  },
+  { sel: new Set([3, 4, 5]), labelKey: 'tut_same_suit'   },
+  { sel: new Set([1, 2, 5]), labelKey: 'tut_consecutive' },
+  { sel: new Set([0, 4, 8]), labelKey: 'tut_same_rank'   },
 ];
 let _tutAnimPhase = 0, _tutAnimTimer = null;
 
@@ -1401,7 +1395,6 @@ function updateTutAnim(phase) {
   const scene = TAM_SCENES[phase];
   const board = document.getElementById('tut-anim-board');
   if (!board) return;
-  board.style.setProperty('--tam-sel', scene.color);
   board.querySelectorAll('.tam-card').forEach((el, i) => {
     el.classList.toggle('tam-sel', scene.sel.has(i));
     el.classList.toggle('tam-dim', !scene.sel.has(i));
@@ -1425,9 +1418,12 @@ function showTutorialPopup() {
       <p id="tut-sub">${t('tut_sub')}</p>
       <div id="tut-anim-wrap">
         <div id="tut-anim-board">
-          ${TAM_CARDS.map((c, i) =>
-            `<div class="tam-card ${c.red ? 'red' : 'black'}">${c.r}<span>${c.s}</span></div>`
-          ).join('')}
+          ${TAM_CARDS.map(c => `
+            <div class="tam-card ${c.red ? 'red' : 'black'}">
+              <div class="tam-tl">${c.r}<span>${c.s}</span></div>
+              <div class="tam-center">${c.s}</div>
+              <div class="tam-br">${c.r}<span>${c.s}</span></div>
+            </div>`).join('')}
         </div>
         <div id="tut-anim-bar">
           <div id="tut-anim-dots">
