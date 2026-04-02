@@ -605,9 +605,10 @@ body.modal-open { overflow: hidden; }
   font-size: 12px; color: var(--ink-mid);
   margin-bottom: 20px; line-height: 1.4;
 }
-/* Tutorial animated board */
+/* Tutorial & guide animated board */
 #tut-anim-wrap { margin: 14px 0 18px; }
-#tut-anim-board {
+.guide-anim-wrap { margin: 12px 0 4px; }
+#tut-anim-board, #guide-anim-board {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
 }
 .tam-card {
@@ -619,20 +620,18 @@ body.modal-open { overflow: hidden; }
 }
 .tam-card.red   { color: var(--red); }
 .tam-card.black { color: var(--ink); }
-/* Corner labels — mirrors .card-tl / .card-br */
+/* Corner labels — rank only, no suit */
 .tam-tl {
   position: absolute; top: 3px; left: 5px;
   font-family: 'EB Garamond', Georgia, serif;
   font-size: 14px; font-weight: 700; line-height: 1;
 }
-.tam-tl span { font-size: 11px; display: block; }
 .tam-br {
   position: absolute; bottom: 3px; right: 5px;
   font-family: 'EB Garamond', Georgia, serif;
   font-size: 14px; font-weight: 700; line-height: 1;
   transform: rotate(180deg);
 }
-.tam-br span { font-size: 11px; display: block; }
 /* Centre suit — mirrors .card-center */
 .tam-center {
   position: absolute; top: 50%; left: 50%;
@@ -646,18 +645,18 @@ body.modal-open { overflow: hidden; }
   transform: scale(1.07); z-index: 1;
 }
 .tam-card.tam-dim { opacity: 0.15; }
-#tut-anim-bar {
+#tut-anim-bar, #guide-anim-bar {
   display: flex; align-items: center; justify-content: space-between;
   margin-top: 10px; padding: 0 2px;
 }
-#tut-anim-dots { display: flex; gap: 6px; }
-.tut-adot {
+#tut-anim-dots, #guide-anim-dots { display: flex; gap: 6px; }
+.tut-adot, .guide-adot {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--border-md);
   transition: background 0.3s, transform 0.3s;
 }
-.tut-adot.active { background: var(--ink); transform: scale(1.35); }
-#tut-anim-label {
+.tut-adot.active, .guide-adot.active { background: var(--ink); transform: scale(1.35); }
+#tut-anim-label, #guide-anim-label {
   font-size: 13px; font-weight: 600; color: var(--ink-mid); letter-spacing: 0.3px;
 }
 .tut-cards {

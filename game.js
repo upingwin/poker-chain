@@ -1420,9 +1420,9 @@ function showTutorialPopup() {
         <div id="tut-anim-board">
           ${TAM_CARDS.map(c => `
             <div class="tam-card ${c.red ? 'red' : 'black'}">
-              <div class="tam-tl">${c.r}<span>${c.s}</span></div>
+              <div class="tam-tl">${c.r}</div>
               <div class="tam-center">${c.s}</div>
-              <div class="tam-br">${c.r}<span>${c.s}</span></div>
+              <div class="tam-br">${c.r}</div>
             </div>`).join('')}
         </div>
         <div id="tut-anim-bar">
@@ -1822,11 +1822,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ─── Help / Game Guide ────────────────────────────────────────────────────────
+let _guideAnimTimer = null, _guideAnimPhase = 0;
+
+function startGuideAnim() {
+  _guideAnimPhase = 0;
+  updateGuideAnim(0);
+  _guideAnimTimer = setInterval(() => {
+    _guideAnimPhase = (_guideAnimPhase + 1) % TAM_SCENES.length;
+    updateGuideAnim(_guideAnimPhase);
+  }, 2500);
+}
+
+function updateGuideAnim(phase) {
+  const scene = TAM_SCENES[phase];
+  const board = document.getElementById('guide-anim-board');
+  if (!board) return;
+  board.querySelectorAll('.tam-card').forEach((el, i) => {
+    el.classList.toggle('tam-sel', scene.sel.has(i));
+    el.classList.toggle('tam-dim', !scene.sel.has(i));
+  });
+  const lbl = document.getElementById('guide-anim-label');
+  if (lbl) lbl.textContent = t(scene.labelKey);
+  document.querySelectorAll('.guide-adot').forEach((d, i) =>
+    d.classList.toggle('active', i === phase)
+  );
+}
+
 function openHelpGuide() {
   lockScroll();
   document.getElementById('guide-modal').classList.remove('hidden');
+  startGuideAnim();
 }
 function closeHelpGuide() {
+  if (_guideAnimTimer) { clearInterval(_guideAnimTimer); _guideAnimTimer = null; }
   document.getElementById('guide-modal').classList.add('hidden');
   unlockScroll();
 }
