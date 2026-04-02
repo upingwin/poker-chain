@@ -1362,6 +1362,57 @@ function jokerHTML(isBig) {
   `;
 }
 
+// ─── Tutorial Animation Board ─────────────────────────────────────────────────
+// 4×4 fixed board; indices: row*4+col
+const TAM_CARDS = [
+  // Row 0
+  { r: 'K',  s: '♠', red: false }, { r: 'A',  s: '♣', red: false },
+  { r: '9',  s: '♣', red: false }, { r: '10', s: '♠', red: false },
+  // Row 1
+  { r: '2',  s: '♦', red: true  }, { r: 'K',  s: '♦', red: true  },
+  { r: 'Q',  s: '♠', red: false }, { r: 'J',  s: '♦', red: true  },
+  // Row 2
+  { r: '3',  s: '♥', red: true  }, { r: '8',  s: '♥', red: true  },
+  { r: 'K',  s: '♥', red: true  }, { r: '5',  s: '♠', red: false },
+  // Row 3
+  { r: '6',  s: '♦', red: true  }, { r: '7',  s: '♣', red: false },
+  { r: '4',  s: '♦', red: true  }, { r: 'K',  s: '♣', red: false },
+];
+// Scene 1: 3♥ 8♥ K♥ — same suit, horizontal row 2
+// Scene 2: 9♣(0,2)→10♠(0,3)→J♦(1,3) — consecutive, L-shape (right then down)
+// Scene 3: K♠(0,0)→K♦(1,1)→K♥(2,2)→K♣(3,3) — same rank, diagonal
+const TAM_SCENES = [
+  { sel: new Set([8, 9, 10]),     labelKey: 'tut_same_suit',   color: 'oklch(54% 0.22 14)'  },
+  { sel: new Set([2, 3, 7]),      labelKey: 'tut_consecutive', color: 'oklch(52% 0.18 220)' },
+  { sel: new Set([0, 5, 10, 15]), labelKey: 'tut_same_rank',   color: 'oklch(60% 0.18 75)'  },
+];
+let _tutAnimPhase = 0, _tutAnimTimer = null;
+
+function startTutAnim() {
+  _tutAnimPhase = 0;
+  updateTutAnim(0);
+  _tutAnimTimer = setInterval(() => {
+    _tutAnimPhase = (_tutAnimPhase + 1) % TAM_SCENES.length;
+    updateTutAnim(_tutAnimPhase);
+  }, 2500);
+}
+
+function updateTutAnim(phase) {
+  const scene = TAM_SCENES[phase];
+  const board = document.getElementById('tut-anim-board');
+  if (!board) return;
+  board.style.setProperty('--tam-sel', scene.color);
+  board.querySelectorAll('.tam-card').forEach((el, i) => {
+    el.classList.toggle('tam-sel', scene.sel.has(i));
+    el.classList.toggle('tam-dim', !scene.sel.has(i));
+  });
+  const lbl = document.getElementById('tut-anim-label');
+  if (lbl) lbl.textContent = t(scene.labelKey);
+  document.querySelectorAll('.tut-adot').forEach((d, i) =>
+    d.classList.toggle('active', i === phase)
+  );
+}
+
 // ─── Tutorial Popup (first-time, Level 1 only) ────────────────────────────────
 function showTutorialPopup() {
   lockScroll();
@@ -1372,59 +1423,28 @@ function showTutorialPopup() {
     <div id="tut-box">
       <div id="tut-title">${t('tut_title')}</div>
       <p id="tut-sub">${t('tut_sub')}</p>
-      <div id="tut-rows">
-        <div class="tut-row" style="--d:0s">
-          <div class="tut-cards">
-            <div class="tut-card red">3<span>♥</span></div>
-            <div class="tut-arrow"></div>
-            <div class="tut-card red">8<span>♥</span></div>
-            <div class="tut-arrow"></div>
-            <div class="tut-card red">Q<span>♥</span></div>
-          </div>
-          <div class="tut-label">${t('tut_same_suit')}</div>
+      <div id="tut-anim-wrap">
+        <div id="tut-anim-board">
+          ${TAM_CARDS.map((c, i) =>
+            `<div class="tam-card ${c.red ? 'red' : 'black'}">${c.r}<span>${c.s}</span></div>`
+          ).join('')}
         </div>
-        <div class="tut-row" style="--d:0.45s">
-          <div class="tut-cards">
-            <div class="tut-card black">K<span>♠</span></div>
-            <div class="tut-arrow"></div>
-            <div class="tut-card red">K<span>♥</span></div>
-            <div class="tut-arrow"></div>
-            <div class="tut-card red">K<span>♦</span></div>
+        <div id="tut-anim-bar">
+          <div id="tut-anim-dots">
+            <span class="tut-adot"></span><span class="tut-adot"></span><span class="tut-adot"></span>
           </div>
-          <div class="tut-label">${t('tut_same_rank')}</div>
-        </div>
-        <div class="tut-row" style="--d:0.9s">
-          <div class="tut-cards">
-            <div class="tut-card black">5<span>♠</span></div>
-            <div class="tut-arrow"></div>
-            <div class="tut-card red">6<span>♥</span></div>
-            <div class="tut-arrow"></div>
-            <div class="tut-card red">7<span>♦</span></div>
-          </div>
-          <div class="tut-label">${t('tut_consecutive')}</div>
-        </div>
-        <div class="tut-row" style="--d:1.35s">
-          <div class="tut-mini-grid">
-            <div class="tut-mini-card dim"></div>
-            <div class="tut-mini-card dim"></div>
-            <div class="tut-mini-card lit red">7<span>♥</span></div>
-            <div class="tut-mini-card dim"></div>
-            <div class="tut-mini-card lit black">8<span>♠</span></div>
-            <div class="tut-mini-card dim"></div>
-            <div class="tut-mini-card lit red">9<span>♦</span></div>
-            <div class="tut-mini-card dim"></div>
-            <div class="tut-mini-card dim"></div>
-          </div>
-          <div class="tut-label">${t('tut_diagonal')}</div>
+          <div id="tut-anim-label"></div>
         </div>
       </div>
       <button id="tut-btn" onclick="closeTutorialPopup()">${t('tut_got_it')}</button>
     </div>
   `;
   document.body.appendChild(modal);
+  requestAnimationFrame(() => startTutAnim());
 }
 
 function closeTutorialPopup() {
+  if (_tutAnimTimer) { clearInterval(_tutAnimTimer); _tutAnimTimer = null; }
   const modal = document.getElementById('tut-modal');
   if (!modal) return;
   modal.classList.add('tut-exit');

@@ -605,20 +605,44 @@ body.modal-open { overflow: hidden; }
   font-size: 12px; color: var(--ink-mid);
   margin-bottom: 20px; line-height: 1.4;
 }
-#tut-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-.tut-row {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 14px;
-  opacity: 0;
-  animation: rowReveal 0.35s var(--spring) forwards;
-  animation-delay: var(--d, 0s);
+/* Tutorial animated board */
+#tut-anim-wrap { margin: 14px 0 18px; }
+#tut-anim-board {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+  --tam-sel: oklch(54% 0.22 14);
 }
-@keyframes rowReveal {
-  from { opacity: 0; transform: translateX(-10px); }
-  to   { opacity: 1; transform: translateX(0); }
+.tam-card {
+  aspect-ratio: 3/4;
+  background: var(--card); border: 1px solid var(--border-md); border-radius: 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: 'EB Garamond', Georgia, serif; font-size: 15px; font-weight: 700; line-height: 1.1;
+  position: relative;
+  transition: background 0.38s ease, color 0.38s ease, opacity 0.38s ease,
+              box-shadow 0.38s ease, transform 0.38s ease, border-color 0.38s ease;
+}
+.tam-card span { font-size: 11px; }
+.tam-card.red   { color: var(--red); }
+.tam-card.black { color: var(--ink); }
+.tam-card.tam-sel {
+  background: var(--tam-sel); color: white; border-color: transparent;
+  box-shadow: 0 0 0 2px var(--tam-sel), 0 3px 12px oklch(0% 0 0 / 0.28);
+  transform: scale(1.07); z-index: 1;
+}
+.tam-card.tam-sel span { color: rgba(255,255,255,0.85); }
+.tam-card.tam-dim { opacity: 0.18; transform: scale(0.96); }
+#tut-anim-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px; padding: 0 2px;
+}
+#tut-anim-dots { display: flex; gap: 6px; }
+.tut-adot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border-md);
+  transition: background 0.3s, transform 0.3s;
+}
+.tut-adot.active { background: var(--ink); transform: scale(1.35); }
+#tut-anim-label {
+  font-size: 13px; font-weight: 600; color: var(--ink-mid); letter-spacing: 0.3px;
 }
 .tut-cards {
   display: flex; align-items: center; gap: 4px;
