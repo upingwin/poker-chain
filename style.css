@@ -855,223 +855,229 @@ body.modal-open { overflow: hidden; }
   display: flex; align-items: center; justify-content: center;
 }
 
-/* card-back pseudo-elements setup (position:absolute already establishes containing block) */
+/* ── Fruit Skins: shared setup ── */
+:root { --skin-emoji: 26px; }
+.skin-preview { --skin-emoji: 52px; }
 .card-back::before, .card-back::after {
   content: ''; position: absolute; pointer-events: none;
 }
+[class*="skin-"] .card-back::before {
+  font-size: var(--skin-emoji, 26px); line-height: 1;
+  filter: drop-shadow(0 1px 4px oklch(0% 0 0 / 0.45));
+}
+[class*="skin-"] .card-back::after {
+  inset: 10%; border-radius: 50%;
+}
 
-/* ── Skin 1: Royal Gold ── jet black + high-contrast gold diamond lattice */
+/* ── Skin 0: Apple 🍎 (free default) ── dark red + red dots */
+.skin-0.face-down {
+  background: linear-gradient(135deg, oklch(24% 0.16 18), oklch(36% 0.19 22));
+  border-color: oklch(64% 0.22 18 / 0.8);
+  box-shadow: 0 0 0 1px oklch(64% 0.22 18 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+}
+.skin-0 .card-back {
+  border-color: oklch(64% 0.22 18 / 0.4);
+  background-image: radial-gradient(oklch(64% 0.22 18 / 0.30) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+}
+.skin-0 .card-back::before { content: '🍎'; }
+.skin-0 .card-back::after  { border: 1.5px solid oklch(64% 0.22 18 / 0.45); }
+
+/* ── Skin 1: Cherry 🍒 ── deep crimson + magenta dots */
 .skin-1.face-down {
-  background: oklch(9% 0.008 55);
-  border-color: oklch(72% 0.18 78 / 0.8);
-  box-shadow: 0 0 0 1px oklch(72% 0.18 78 / 0.25), 0 1px 3px oklch(0% 0 0 / 0.3);
+  background: linear-gradient(135deg, oklch(20% 0.18 10), oklch(30% 0.22 8));
+  border-color: oklch(60% 0.25 12 / 0.8);
+  box-shadow: 0 0 0 1px oklch(60% 0.25 12 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-1 .card-back {
-  border-color: oklch(72% 0.18 78 / 0.55);
-  background-image:
-    repeating-linear-gradient(45deg,  oklch(72% 0.18 78 / 0.50) 0, oklch(72% 0.18 78 / 0.50) 1px, transparent 1px, transparent 9px),
-    repeating-linear-gradient(-45deg, oklch(72% 0.18 78 / 0.50) 0, oklch(72% 0.18 78 / 0.50) 1px, transparent 1px, transparent 9px);
+  border-color: oklch(60% 0.25 12 / 0.4);
+  background-image: radial-gradient(oklch(60% 0.25 12 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* center diamond */
-.skin-1 .card-back::before {
-  width: 32%; aspect-ratio: 1;
-  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
-  border: 1.5px solid oklch(72% 0.18 78 / 0.7);
-}
-/* outer rotated square frame */
-.skin-1 .card-back::after {
-  inset: 14%; border: 1px solid oklch(72% 0.18 78 / 0.35);
-  transform: rotate(45deg);
-}
+.skin-1 .card-back::before { content: '🍒'; }
+.skin-1 .card-back::after  { border: 1.5px solid oklch(60% 0.25 12 / 0.45); }
 
-/* ── Skin 2: Deep Ocean ── teal-black + layered wave bands + circle motif */
+/* ── Skin 2: Banana 🍌 ── deep gold + yellow dots */
 .skin-2.face-down {
-  background: oklch(14% 0.07 210);
-  border-color: oklch(68% 0.18 200 / 0.8);
-  box-shadow: 0 0 0 1px oklch(68% 0.18 200 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.3);
+  background: linear-gradient(135deg, oklch(30% 0.12 88), oklch(40% 0.15 85));
+  border-color: oklch(76% 0.17 88 / 0.8);
+  box-shadow: 0 0 0 1px oklch(76% 0.17 88 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-2 .card-back {
-  border-color: oklch(68% 0.18 200 / 0.5);
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      oklch(68% 0.20 200 / 0.45) 0,  oklch(68% 0.20 200 / 0.45) 2px,
-      transparent 2px,                transparent 10px,
-      oklch(52% 0.16 210 / 0.20) 10px, oklch(52% 0.16 210 / 0.20) 11px,
-      transparent 11px,               transparent 16px
-    );
+  border-color: oklch(76% 0.17 88 / 0.4);
+  background-image: radial-gradient(oklch(76% 0.17 88 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* glowing circle frame */
-.skin-2 .card-back::before {
-  inset: 18%; border-radius: 50%;
-  border: 1.5px solid oklch(68% 0.20 200 / 0.65);
-}
-/* inner small circle */
-.skin-2 .card-back::after {
-  width: 22%; aspect-ratio: 1; border-radius: 50%;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: oklch(68% 0.20 200 / 0.3);
-  box-shadow: 0 0 6px oklch(68% 0.20 200 / 0.4);
-}
+.skin-2 .card-back::before { content: '🍌'; }
+.skin-2 .card-back::after  { border: 1.5px solid oklch(76% 0.17 88 / 0.45); }
 
-/* ── Skin 3: Amethyst ── deep violet + radial starburst from center */
+/* ── Skin 3: Kiwi 🥝 ── earthy brown-green + warm dots */
 .skin-3.face-down {
-  background: oklch(15% 0.10 295);
-  border-color: oklch(68% 0.20 295 / 0.8);
-  box-shadow: 0 0 0 1px oklch(68% 0.20 295 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.3);
+  background: linear-gradient(135deg, oklch(22% 0.08 120), oklch(30% 0.10 110));
+  border-color: oklch(55% 0.14 115 / 0.8);
+  box-shadow: 0 0 0 1px oklch(55% 0.14 115 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-3 .card-back {
-  border-color: oklch(68% 0.20 295 / 0.5);
-  background-image:
-    repeating-conic-gradient(
-      oklch(68% 0.22 295 / 0.38) 0deg 6deg,
-      transparent 6deg 12deg
-    );
+  border-color: oklch(55% 0.14 115 / 0.4);
+  background-image: radial-gradient(oklch(55% 0.14 115 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* outer oval */
-.skin-3 .card-back::before {
-  inset: 20%; border-radius: 50%;
-  border: 1.5px solid oklch(68% 0.22 295 / 0.55);
-}
-/* center dot */
-.skin-3 .card-back::after {
-  width: 16%; aspect-ratio: 1; border-radius: 50%;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: oklch(68% 0.22 295 / 0.55);
-  box-shadow: 0 0 8px oklch(68% 0.22 295 / 0.5);
-}
+.skin-3 .card-back::before { content: '🥝'; }
+.skin-3 .card-back::after  { border: 1.5px solid oklch(55% 0.14 115 / 0.45); }
 
-/* ── Skin 4: Sakura ── blush rose (lighter!) + concentric rings + petal frame */
+/* ── Skin 4: Watermelon 🍉 ── dark green + pink dots */
 .skin-4.face-down {
-  background: oklch(38% 0.12 355);
-  border-color: oklch(80% 0.16 355 / 0.85);
-  box-shadow: 0 0 0 1px oklch(80% 0.16 355 / 0.25), 0 1px 3px oklch(0% 0 0 / 0.2);
+  background: linear-gradient(135deg, oklch(18% 0.10 148), oklch(25% 0.12 145));
+  border-color: oklch(55% 0.18 148 / 0.8);
+  box-shadow: 0 0 0 1px oklch(55% 0.18 148 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-4 .card-back {
-  border-color: oklch(80% 0.16 355 / 0.55);
-  background-image:
-    radial-gradient(circle, transparent 18%, oklch(80% 0.16 355 / 0.30) 19%, oklch(80% 0.16 355 / 0.30) 20%, transparent 21%),
-    radial-gradient(circle, transparent 28%, oklch(80% 0.16 355 / 0.22) 29%, oklch(80% 0.16 355 / 0.22) 30%, transparent 31%),
-    radial-gradient(circle, transparent 38%, oklch(80% 0.16 355 / 0.16) 39%, oklch(80% 0.16 355 / 0.16) 40%, transparent 41%),
-    radial-gradient(circle, transparent 48%, oklch(80% 0.16 355 / 0.10) 49%, oklch(80% 0.16 355 / 0.10) 50%, transparent 51%);
+  border-color: oklch(55% 0.18 148 / 0.4);
+  background-image: radial-gradient(oklch(70% 0.20 355 / 0.35) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* petal-like rotated square */
-.skin-4 .card-back::before {
-  width: 42%; aspect-ratio: 1;
-  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
-  border: 1.5px solid oklch(80% 0.16 355 / 0.60);
-  border-radius: 4px;
-}
-/* inner diamond */
-.skin-4 .card-back::after {
-  width: 20%; aspect-ratio: 1;
-  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
-  background: oklch(80% 0.16 355 / 0.45);
-}
+.skin-4 .card-back::before { content: '🍉'; }
+.skin-4 .card-back::after  { border: 1.5px solid oklch(70% 0.20 355 / 0.45); }
 
-/* ── Skin 5: Jade ── rich green + hexagonal mesh + gem center */
+/* ── Skin 5: Orange 🍊 ── warm orange + orange dots */
 .skin-5.face-down {
-  background: oklch(16% 0.09 150);
-  border-color: oklch(62% 0.20 150 / 0.8);
-  box-shadow: 0 0 0 1px oklch(62% 0.20 150 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.3);
+  background: linear-gradient(135deg, oklch(28% 0.15 52), oklch(38% 0.18 48));
+  border-color: oklch(72% 0.19 50 / 0.8);
+  box-shadow: 0 0 0 1px oklch(72% 0.19 50 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-5 .card-back {
-  border-color: oklch(62% 0.20 150 / 0.5);
-  background-image:
-    repeating-linear-gradient(60deg,  oklch(62% 0.22 150 / 0.45) 0, oklch(62% 0.22 150 / 0.45) 1px, transparent 1px, transparent 8px),
-    repeating-linear-gradient(-60deg, oklch(62% 0.22 150 / 0.45) 0, oklch(62% 0.22 150 / 0.45) 1px, transparent 1px, transparent 8px),
-    repeating-linear-gradient(0deg,   oklch(62% 0.22 150 / 0.22) 0, oklch(62% 0.22 150 / 0.22) 1px, transparent 1px, transparent 8px);
+  border-color: oklch(72% 0.19 50 / 0.4);
+  background-image: radial-gradient(oklch(72% 0.19 50 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* hexagon-ish frame using circle */
-.skin-5 .card-back::before {
-  inset: 20%; border-radius: 50%;
-  border: 1.5px solid oklch(62% 0.22 150 / 0.65);
-}
-/* gem center diamond */
-.skin-5 .card-back::after {
-  width: 24%; aspect-ratio: 1;
-  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
-  background: oklch(62% 0.22 150 / 0.50);
-  box-shadow: 0 0 6px oklch(62% 0.22 150 / 0.45);
-}
+.skin-5 .card-back::before { content: '🍊'; }
+.skin-5 .card-back::after  { border: 1.5px solid oklch(72% 0.19 50 / 0.45); }
 
-/* ── Skin 6: Neon Circuit ── near-black + bold cyan grid + crosshair + glow */
+/* ── Skin 6: Grape 🍇 ── deep purple + violet dots */
 .skin-6.face-down {
-  background: oklch(8% 0.015 220);
-  border-color: oklch(74% 0.22 198 / 0.9);
-  box-shadow: 0 0 0 1px oklch(74% 0.22 198 / 0.3), 0 0 8px oklch(74% 0.22 198 / 0.15);
+  background: linear-gradient(135deg, oklch(16% 0.12 300), oklch(24% 0.16 295));
+  border-color: oklch(62% 0.22 300 / 0.8);
+  box-shadow: 0 0 0 1px oklch(62% 0.22 300 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-6 .card-back {
-  border-color: oklch(74% 0.22 198 / 0.7);
-  background-image:
-    repeating-linear-gradient(0deg,  oklch(74% 0.22 198 / 0.50) 0, oklch(74% 0.22 198 / 0.50) 1.5px, transparent 1.5px, transparent 10px),
-    repeating-linear-gradient(90deg, oklch(74% 0.22 198 / 0.50) 0, oklch(74% 0.22 198 / 0.50) 1.5px, transparent 1.5px, transparent 10px);
-  box-shadow: inset 0 0 14px oklch(74% 0.22 198 / 0.18);
+  border-color: oklch(62% 0.22 300 / 0.4);
+  background-image: radial-gradient(oklch(62% 0.22 300 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* crosshair horizontal */
-.skin-6 .card-back::before {
-  top: 50%; left: 10%; right: 10%; height: 1.5px;
-  background: oklch(74% 0.22 198 / 0.8);
-  box-shadow: 0 0 6px oklch(74% 0.22 198 / 0.6);
-}
-/* crosshair vertical */
-.skin-6 .card-back::after {
-  left: 50%; top: 10%; bottom: 10%; width: 1.5px;
-  background: oklch(74% 0.22 198 / 0.8);
-  box-shadow: 0 0 6px oklch(74% 0.22 198 / 0.6);
-}
+.skin-6 .card-back::before { content: '🍇'; }
+.skin-6 .card-back::after  { border: 1.5px solid oklch(62% 0.22 300 / 0.45); }
 
-/* ── Skin 7: Silver Marble ── cool mid-grey + bold diagonal veins + oval frame */
+/* ── Skin 7: Strawberry 🍓 ── vivid pink-red + bright dots */
 .skin-7.face-down {
-  background: linear-gradient(150deg, oklch(42% 0.006 230) 0%, oklch(32% 0.008 240) 55%, oklch(38% 0.005 220) 100%);
-  border-color: oklch(72% 0.008 230 / 0.7);
-  box-shadow: 0 0 0 1px oklch(72% 0.008 230 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+  background: linear-gradient(135deg, oklch(26% 0.18 5), oklch(35% 0.20 355));
+  border-color: oklch(68% 0.24 5 / 0.8);
+  box-shadow: 0 0 0 1px oklch(68% 0.24 5 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-7 .card-back {
-  border-color: oklch(80% 0.006 230 / 0.45);
-  background-image:
-    repeating-linear-gradient(105deg, oklch(82% 0.006 230 / 0.42) 0, oklch(82% 0.006 230 / 0.42) 2px, transparent 2px, transparent 16px),
-    repeating-linear-gradient(75deg,  oklch(65% 0.005 240 / 0.22) 0, oklch(65% 0.005 240 / 0.22) 1px, transparent 1px, transparent 10px);
+  border-color: oklch(68% 0.24 5 / 0.4);
+  background-image: radial-gradient(oklch(68% 0.24 5 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* elegant oval frame */
-.skin-7 .card-back::before {
-  inset: 16%; border-radius: 50%;
-  border: 1.5px solid oklch(82% 0.006 230 / 0.55);
-}
-/* inner oval dot */
-.skin-7 .card-back::after {
-  width: 20%; aspect-ratio: 1; border-radius: 50%;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: oklch(82% 0.006 230 / 0.35);
-}
+.skin-7 .card-back::before { content: '🍓'; }
+.skin-7 .card-back::after  { border: 1.5px solid oklch(68% 0.24 5 / 0.45); }
 
-/* ── Skin 8: Ember ── dark amber-red + bold radial rays from center + fire glow */
+/* ── Skin 8: Blueberry 🫐 ── deep indigo + blue dots */
 .skin-8.face-down {
-  background: radial-gradient(circle at 50% 55%, oklch(28% 0.10 40) 0%, oklch(15% 0.06 20) 100%);
-  border-color: oklch(70% 0.18 55 / 0.85);
-  box-shadow: 0 0 0 1px oklch(70% 0.18 55 / 0.25), 0 0 10px oklch(70% 0.18 55 / 0.10);
+  background: linear-gradient(135deg, oklch(18% 0.10 260), oklch(26% 0.14 265));
+  border-color: oklch(60% 0.20 265 / 0.8);
+  box-shadow: 0 0 0 1px oklch(60% 0.20 265 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
 .skin-8 .card-back {
-  border-color: oklch(70% 0.18 55 / 0.55);
-  background-image:
-    repeating-conic-gradient(
-      oklch(70% 0.20 55 / 0.42) 0deg 5deg,
-      transparent 5deg 10deg
-    );
+  border-color: oklch(60% 0.20 265 / 0.4);
+  background-image: radial-gradient(oklch(60% 0.20 265 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
-/* outer glow ring */
-.skin-8 .card-back::before {
-  inset: 16%; border-radius: 50%;
-  border: 1.5px solid oklch(70% 0.20 55 / 0.60);
-  box-shadow: 0 0 8px oklch(70% 0.20 55 / 0.30);
+.skin-8 .card-back::before { content: '🫐'; }
+.skin-8 .card-back::after  { border: 1.5px solid oklch(60% 0.20 265 / 0.45); }
+
+/* ── Skin 9: Pineapple 🍍 ── dark green + gold dots */
+.skin-9.face-down {
+  background: linear-gradient(135deg, oklch(20% 0.10 145), oklch(28% 0.13 140));
+  border-color: oklch(50% 0.16 145 / 0.8);
+  box-shadow: 0 0 0 1px oklch(50% 0.16 145 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
 }
-/* ember core */
-.skin-8 .card-back::after {
-  width: 22%; aspect-ratio: 1; border-radius: 50%;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: radial-gradient(circle, oklch(72% 0.20 60 / 0.8) 0%, oklch(52% 0.18 35 / 0) 100%);
-  box-shadow: 0 0 10px oklch(70% 0.20 55 / 0.5);
+.skin-9 .card-back {
+  border-color: oklch(50% 0.16 145 / 0.4);
+  background-image: radial-gradient(oklch(76% 0.17 88 / 0.38) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
 }
+.skin-9 .card-back::before { content: '🍍'; }
+.skin-9 .card-back::after  { border: 1.5px solid oklch(76% 0.17 88 / 0.45); }
+
+/* ── Skin 10: Mango 🥭 ── warm amber + golden dots */
+.skin-10.face-down {
+  background: linear-gradient(135deg, oklch(30% 0.14 60), oklch(40% 0.17 55));
+  border-color: oklch(74% 0.18 62 / 0.8);
+  box-shadow: 0 0 0 1px oklch(74% 0.18 62 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+}
+.skin-10 .card-back {
+  border-color: oklch(74% 0.18 62 / 0.4);
+  background-image: radial-gradient(oklch(74% 0.18 62 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+}
+.skin-10 .card-back::before { content: '🥭'; }
+.skin-10 .card-back::after  { border: 1.5px solid oklch(74% 0.18 62 / 0.45); }
+
+/* ── Skin 11: Peach 🍑 ── soft coral + warm dots */
+.skin-11.face-down {
+  background: linear-gradient(135deg, oklch(34% 0.12 38), oklch(44% 0.14 35));
+  border-color: oklch(74% 0.16 38 / 0.8);
+  box-shadow: 0 0 0 1px oklch(74% 0.16 38 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+}
+.skin-11 .card-back {
+  border-color: oklch(74% 0.16 38 / 0.4);
+  background-image: radial-gradient(oklch(74% 0.16 38 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+}
+.skin-11 .card-back::before { content: '🍑'; }
+.skin-11 .card-back::after  { border: 1.5px solid oklch(74% 0.16 38 / 0.45); }
+
+/* ── Skin 12: Lemon 🍋 ── bright lime-yellow + yellow dots */
+.skin-12.face-down {
+  background: linear-gradient(135deg, oklch(34% 0.14 100), oklch(44% 0.17 96));
+  border-color: oklch(80% 0.18 102 / 0.8);
+  box-shadow: 0 0 0 1px oklch(80% 0.18 102 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+}
+.skin-12 .card-back {
+  border-color: oklch(80% 0.18 102 / 0.4);
+  background-image: radial-gradient(oklch(80% 0.18 102 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+}
+.skin-12 .card-back::before { content: '🍋'; }
+.skin-12 .card-back::after  { border: 1.5px solid oklch(80% 0.18 102 / 0.45); }
+
+/* ── Skin 13: Coconut 🥥 ── warm brown + tan dots */
+.skin-13.face-down {
+  background: linear-gradient(135deg, oklch(24% 0.07 68), oklch(33% 0.09 64));
+  border-color: oklch(60% 0.12 68 / 0.8);
+  box-shadow: 0 0 0 1px oklch(60% 0.12 68 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+}
+.skin-13 .card-back {
+  border-color: oklch(60% 0.12 68 / 0.4);
+  background-image: radial-gradient(oklch(60% 0.12 68 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+}
+.skin-13 .card-back::before { content: '🥥'; }
+.skin-13 .card-back::after  { border: 1.5px solid oklch(60% 0.12 68 / 0.45); }
+
+/* ── Skin 14: Melon 🍈 ── sage green + muted green dots */
+.skin-14.face-down {
+  background: linear-gradient(135deg, oklch(20% 0.08 165), oklch(28% 0.10 160));
+  border-color: oklch(58% 0.14 165 / 0.8);
+  box-shadow: 0 0 0 1px oklch(58% 0.14 165 / 0.2), 0 1px 3px oklch(0% 0 0 / 0.25);
+}
+.skin-14 .card-back {
+  border-color: oklch(58% 0.14 165 / 0.4);
+  background-image: radial-gradient(oklch(58% 0.14 165 / 0.32) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+}
+.skin-14 .card-back::before { content: '🍈'; }
+.skin-14 .card-back::after  { border: 1.5px solid oklch(58% 0.14 165 / 0.45); }
 
 /* Empty */
 .card.empty { background: oklch(88% 0.022 78 / 0.4); border: 1px dashed var(--border); box-shadow: none; }

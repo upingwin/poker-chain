@@ -1613,18 +1613,24 @@ function closeLeaderboard() {
 
 // ─── Skin Shop ────────────────────────────────────────────────────────────────
 const SKINS = [
-  { id: 0, nameKey: 'skin_0', cls: ''       }, // default
-  { id: 1, nameKey: 'skin_1', cls: 'skin-1' },
-  { id: 2, nameKey: 'skin_2', cls: 'skin-2' },
-  { id: 3, nameKey: 'skin_3', cls: 'skin-3' },
-  { id: 4, nameKey: 'skin_4', cls: 'skin-4' },
-  { id: 5, nameKey: 'skin_5', cls: 'skin-5' },
-  { id: 6, nameKey: 'skin_6', cls: 'skin-6' },
-  { id: 7, nameKey: 'skin_7', cls: 'skin-7' },
-  { id: 8, nameKey: 'skin_8', cls: 'skin-8' },
+  { id:  0, nameKey: 'skin_0',  cls: 'skin-0'  }, // Apple (free default)
+  { id:  1, nameKey: 'skin_1',  cls: 'skin-1'  }, // Cherry
+  { id:  2, nameKey: 'skin_2',  cls: 'skin-2'  }, // Banana
+  { id:  3, nameKey: 'skin_3',  cls: 'skin-3'  }, // Kiwi
+  { id:  4, nameKey: 'skin_4',  cls: 'skin-4'  }, // Watermelon
+  { id:  5, nameKey: 'skin_5',  cls: 'skin-5'  }, // Orange
+  { id:  6, nameKey: 'skin_6',  cls: 'skin-6'  }, // Grape
+  { id:  7, nameKey: 'skin_7',  cls: 'skin-7'  }, // Strawberry
+  { id:  8, nameKey: 'skin_8',  cls: 'skin-8'  }, // Blueberry
+  { id:  9, nameKey: 'skin_9',  cls: 'skin-9'  }, // Pineapple
+  { id: 10, nameKey: 'skin_10', cls: 'skin-10' }, // Mango
+  { id: 11, nameKey: 'skin_11', cls: 'skin-11' }, // Peach
+  { id: 12, nameKey: 'skin_12', cls: 'skin-12' }, // Lemon
+  { id: 13, nameKey: 'skin_13', cls: 'skin-13' }, // Coconut
+  { id: 14, nameKey: 'skin_14', cls: 'skin-14' }, // Melon
 ];
 const SKIN_STAR_COST  = 30;  // in-game stars threshold per skin slot
-const SKIN_TG_PRICE   = 50;  // Telegram Stars to buy directly
+const SKIN_TG_PRICE   = 30;  // Telegram Stars to buy directly
 
 let _skinTotalStars  = 0;    // fetched from backend
 let _skinPurchased   = [];   // skin IDs purchased via TG Stars
