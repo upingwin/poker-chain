@@ -283,19 +283,25 @@ async function handleGetSkins(request, env) {
 }
 
 // ─── POST /api/skin/buy ───────────────────────────────────────────────────────
-// Body: { skin_id: 1..8 }
+// Body: { skin_id: 1..14 }
 // Returns: { url } — invoice link
-const SKIN_STARS_PRICE = 50; // Telegram Stars per skin
+const SKIN_STARS_PRICE = 30; // Telegram Stars per skin
 const SKIN_NAMES = [
-  '', // 0 = default, not purchasable
-  'Crimson Damask',
-  'Midnight Grid',
-  'Forest Plaid',
-  'Gold Arabesque',
-  'Sakura',
-  'Cyber Glow',
-  'Marble',
-  'Sepia Vintage',
+  '', // 0 = Apple (free default, not purchasable)
+  'Cherry',
+  'Banana',
+  'Kiwi',
+  'Watermelon',
+  'Orange',
+  'Grape',
+  'Strawberry',
+  'Blueberry',
+  'Pineapple',
+  'Mango',
+  'Peach',
+  'Lemon',
+  'Coconut',
+  'Melon',
 ];
 
 async function handleBuySkin(request, env) {
@@ -307,7 +313,7 @@ async function handleBuySkin(request, env) {
   catch { return json({ error: 'Bad JSON' }, 400); }
 
   const { skin_id } = body;
-  if (!Number.isInteger(skin_id) || skin_id < 1 || skin_id > 8)
+  if (!Number.isInteger(skin_id) || skin_id < 1 || skin_id > 14)
     return json({ error: 'Invalid skin_id' }, 400);
 
   // Check if already owned
